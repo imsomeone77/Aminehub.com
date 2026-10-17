@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AmineHub — Minecraft Community</title>
+<meta name="description" content="AmineHub — the ultimate Minecraft community. News, guides, servers, member profiles and more.">
+<meta name="theme-color" content="#0d1a12">
+<!-- Open Graph / Social -->
+<meta property="og:title" content="AmineHub — Minecraft Community">
+<meta property="og:description" content="News, servers, members and community posts for Minecraft players.">
+<meta property="og:type" content="website">
+<!-- GitHub Pages: single-file, zero external dependencies, all assets resolved from same folder -->
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root{
+  --bg:#0d1a12;--bg2:#111e16;--bg3:#162010;
+  --card:#1a2b1e;--card2:#1f3324;
+  --border:#2a4030;--border2:#3a5845;
+  --em:#22c55e;--em2:#16a34a;--em3:#4ade80;--em-dim:#14532d;
+  --text:#e8f5e9;--text2:#86efac;--text3:#6b7280;--text4:#d1fae5;
+  --danger:#ef4444;--warn:#f59e0b;
+  --r:10px;--r2:16px;
+  --sidebar-w:230px;
+  --topbar-h:56px;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --transition:.18s ease;
+}
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+img{max-width:100%;height:auto;display:block}
+ul{list-style:none}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ═══════════════════════════════════════════
+   LAYOUT SHELL  (sidebar + main, full-height)
+═══════════════════════════════════════════ */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  flex-shrink:0;overflow-y:auto;overflow-x:hidden;
+  z-index:40;
+  transition:transform var(--transition);
+}
+
+/* MAIN COLUMN */
+.main{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  height:var(--topbar-h);
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:0 18px;
+  display:flex;align-items:center;gap:10px;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+
+/* PAGE CONTENT */
+.page{flex:1;padding:24px 22px 56px;max-width:1200px;width:100%;margin:0 auto}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR INTERNALS
+═══════════════════════════════════════════ */
+.logo{
+  padding:18px 16px 14px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.logo-icon{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(135deg,var(--em),var(--em2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.logo-name{font-weight:700;font-size:17px;letter-spacing:-.3px;white-space:nowrap}
+.logo-name em{color:var(--em);font-style:normal}
+
+.nav-group{padding:8px 0}
+.nav-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--text3);
+  padding:6px 16px 3px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 16px;
+  font-size:13.5px;color:var(--text2);
+  border-left:3px solid transparent;
+  cursor:pointer;
+  transition:background var(--transition),color var(--transition),border-color var(--transition);
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--em-dim);color:var(--em3);border-left-color:var(--em)}
+.nav-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0}
+.nav-sep{height:1px;background:var(--border);margin:6px 0}
+
+.sidebar-foot{
+  margin-top:auto;flex-shrink:0;
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+}
+.user-pill{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 8px;border-radius:var(--r);transition:background var(--transition)}
+.user-pill:hover{background:var(--bg3)}
+.user-pill .uname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-pill .urole{font-size:11px;color:var(--text3)}
+
+/* ═══════════════════════════════════════════
+   AVATAR / BADGE PRIMITIVES
+═══════════════════════════════════════════ */
+.av{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--em-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--em3);
+  flex-shrink:0;border:2px solid var(--border2);
+  overflow:hidden;
+}
+.av.lg{width:52px;height:52px;font-size:20px}
+.av.xl{width:72px;height:72px;font-size:26px}
+.av img{width:100%;height:100%;object-fit:cover}
+
+.tag{
+  display:inline-flex;align-items:center;
+  padding:2px 8px;border-radius:20px;
+  font-size:10.5px;font-weight:600;white-space:nowrap;
+}
+.tg{background:var(--em-dim);color:var(--em3);border:1px solid #1f5c30}
+.tb{background:#1e3a5f;color:#7dd3fc;border:1px solid #2a5580}
+.ta{background:#3d2b00;color:#fbbf24;border:1px solid #5a3e00}
+.tr{background:#3d1414;color:#fca5a5;border:1px solid #5c1f1f}
+.tp{background:#2d1e5c;color:#c4b5fd;border:1px solid #3f2a7a}
+
+/* ═══════════════════════════════════════════
+   TOPBAR INTERNALS
+═══════════════════════════════════════════ */
+.menu-btn{
+  display:none;
+  width:36px;height:36px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  align-items:center;justify-content:center;
+  font-size:18px;color:var(--text2);flex-shrink:0;
+  transition:background var(--transition);
+}
+.menu-btn:hover{background:var(--card2);color:var(--text)}
+.search-box{flex:1;max-width:360px;position:relative}
+.search-box input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:7px 12px 7px 34px;
+  font-size:13px;color:var(--text);
+  outline:none;transition:border-color var(--transition);
+}
+.search-box input:focus{border-color:var(--em);box-shadow:0 0 0 2px rgba(34,197,94,.12)}
+.search-box input::placeholder{color:var(--text3)}
+.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+.tb-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.ico-btn{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:var(--text2);
+  transition:background var(--transition),color var(--transition);
+  position:relative;
+}
+.ico-btn:hover{background:var(--card2);color:var(--text)}
+.notif-dot{
+  position:absolute;top:5px;right:5px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--danger);border:1.5px solid var(--bg2);
+}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 18px;border-radius:var(--r);
+  font-size:13.5px;font-weight:600;
+  border:1px solid transparent;
+  white-space:nowrap;
+  transition:background var(--transition),color var(--transition),border-color var(--transition),transform .1s;
+  -webkit-tap-highlight-color:transparent;
+  cursor:pointer;
+}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--em);color:#071a0d;border-color:var(--em)}
+.btn-p:hover{background:var(--em3);border-color:var(--em3)}
+.btn-o{background:transparent;color:var(--text);border-color:var(--border2)}
+.btn-o:hover{background:var(--card);border-color:var(--em)}
+.btn-g{background:transparent;color:var(--text2);border-color:transparent}
+.btn-g:hover{background:var(--card);color:var(--text)}
+.btn-d{background:rgba(239,68,68,.12);color:var(--danger);border-color:rgba(239,68,68,.28)}
+.btn-d:hover{background:rgba(239,68,68,.2)}
+.btn-s{padding:5px 12px;font-size:12px}
+.btn-full{width:100%}
+
+/* ═══════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.card-body{padding:18px}
+
+/* ── Article cards ── */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.a-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);overflow:hidden;cursor:pointer;
+  transition:border-color var(--transition),transform var(--transition);
+}
+.a-card:hover{border-color:var(--em);transform:translateY(-2px)}
+.a-thumb{
+  height:140px;
+  background:linear-gradient(135deg,#0d2a1a,#1e4d30);
+  display:flex;align-items:center;justify-content:center;
+  font-size:44px;position:relative;overflow:hidden;
+  flex-shrink:0;
+}
+.a-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.a-meta{display:flex;align-items:center;gap:6px;padding:10px 13px 0;font-size:11px;color:var(--text3);flex-wrap:wrap}
+.a-body{padding:9px 13px 14px}
+.a-title{font-weight:700;font-size:13.5px;line-height:1.35;margin-bottom:5px;color:var(--text)}
+.a-sum{font-size:12px;color:var(--text3);line-height:1.5}
+
+/* ── Member cards ── */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.m-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:16px;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:border-color var(--transition);
+}
+.m-card:hover{border-color:var(--em)}
+.m-info{flex:1;min-width:0}
+.m-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-bio{font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.m-stat{font-size:11.5px;color:var(--text3);margin-top:5px}
+.m-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+
+/* ── Post cards ── */
+.p-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px;margin-bottom:12px;
+  transition:border-color var(--transition);
+}
+.p-card:hover{border-color:var(--border2)}
+.p-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.p-head-meta{flex:1;min-width:0}
+.p-title{font-weight:700;font-size:14.5px;margin-bottom:7px;line-height:1.35}
+.p-body{font-size:13.5px;color:var(--text4);line-height:1.65;margin-bottom:12px}
+.p-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.like-btn{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 11px;border-radius:20px;
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:12.5px;color:var(--text3);
+  transition:all var(--transition);cursor:pointer;
+}
+.like-btn:hover,.like-btn.liked{background:rgba(34,197,94,.1);border-color:var(--em);color:var(--em3)}
+
+/* ── Server cards ── */
+.s-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px;margin-bottom:12px;
+  display:flex;align-items:flex-start;gap:14px;
+  transition:border-color var(--transition);
+}
+.s-card:hover{border-color:var(--border2)}
+.s-icon{
+  width:52px;height:52px;border-radius:10px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+}
+/* image support for server icons */
+.s-icon img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.s-info{flex:1;min-width:0}
+.s-name{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.s-desc{font-size:12.5px;color:var(--text3);margin-bottom:10px;line-height:1.5}
+.s-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.s-ip{
+  font-size:11.5px;color:var(--text3);font-family:monospace;
+  background:var(--bg3);padding:4px 10px;
+  border-radius:6px;border:1px solid var(--border);
+  display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.s-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.copy-wrap{position:relative}
+.copy-tip{
+  position:absolute;bottom:calc(100% + 4px);right:0;
+  background:var(--em);color:#071a0d;
+  font-size:11px;font-weight:700;
+  padding:3px 8px;border-radius:6px;
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .2s;
+}
+.copy-tip.show{opacity:1}
+
+/* ── Nav section cards (home) ── */
+.nc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+.nc{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px 14px;cursor:pointer;
+  transition:border-color var(--transition),background var(--transition),transform var(--transition);
+  text-align:center;
+}
+.nc:hover{border-color:var(--em);background:var(--card2);transform:translateY(-2px)}
+.nc-icon{font-size:26px;margin-bottom:9px}
+.nc-title{font-weight:700;font-size:13px;margin-bottom:4px;color:var(--text)}
+.nc-desc{font-size:11.5px;color:var(--text3);line-height:1.45}
+
+/* ═══════════════════════════════════════════
+   SECTION HELPERS
+═══════════════════════════════════════════ */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+.sec-head h2{font-size:1.05rem;font-weight:700;color:var(--text)}
+.sec-head h2 em{color:var(--em);font-style:normal}
+.divider{height:1px;background:var(--border);margin:24px 0}
+
+/* ── Filters / Tabs ── */
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.flt{
+  padding:5px 13px;border-radius:20px;
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:12.5px;color:var(--text3);cursor:pointer;
+  transition:all var(--transition);
+}
+.flt:hover,.flt.on{background:var(--em-dim);color:var(--em3);border-color:var(--em)}
+.tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--r);padding:4px;width:fit-content;margin-bottom:18px}
+.tab{
+  padding:5px 13px;border-radius:8px;
+  font-size:12.5px;font-weight:500;
+  color:var(--text3);cursor:pointer;
+  transition:all var(--transition);
+}
+.tab.on{background:var(--card2);color:var(--em3);border:1px solid var(--border2)}
+.tab:hover:not(.on){color:var(--text)}
+
+/* ── Empty states ── */
+.empty{text-align:center;padding:52px 20px;color:var(--text3)}
+.empty-ico{font-size:46px;margin-bottom:14px;opacity:.5}
+.empty h3{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13.5px;line-height:1.6;max-width:280px;margin:0 auto 18px}
+
+/* ── Disclaimer / Warning banners ── */
+.warn-banner{
+  background:rgba(245,158,11,.07);
+  border:1px solid rgba(245,158,11,.22);
+  border-radius:var(--r);padding:11px 14px;
+  font-size:12.5px;color:#fbbf24;line-height:1.6;margin-bottom:16px;
+}
+.info-banner{
+  background:rgba(34,197,94,.07);
+  border:1px solid rgba(34,197,94,.2);
+  border-radius:var(--r);padding:11px 14px;
+  font-size:12.5px;color:var(--em3);line-height:1.6;margin-bottom:16px;
+}
+
+/* ── Stat row ── */
+.stat-row{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px}
+.stat{text-align:center}
+.stat-n{font-size:18px;font-weight:700;color:var(--em3)}
+.stat-l{font-size:11px;color:var(--text3)}
+
+/* ── Pagination ── */
+.pages{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:24px}
+.pg{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;background:var(--bg3);
+  border:1px solid var(--border);color:var(--text3);cursor:pointer;
+  transition:all var(--transition);
+}
+.pg.on{background:var(--em-dim);color:var(--em3);border-color:var(--em)}
+.pg:hover:not(.on){border-color:var(--border2);color:var(--text)}
+
+/* ── Rules block ── */
+.rule-block{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:20px;margin-bottom:12px;
+}
+.rule-block h3{font-size:15px;font-weight:700;color:var(--em3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rule-block li{font-size:13.5px;color:var(--text4);line-height:1.75;padding-left:16px;position:relative}
+.rule-block li::before{content:'·';position:absolute;left:4px;color:var(--em)}
+
+/* ═══════════════════════════════════════════
+   HERO BANNER
+═══════════════════════════════════════════ */
+.hero{
+  border-radius:var(--r2);overflow:hidden;
+  position:relative;min-height:230px;
+  background:linear-gradient(135deg,#0a2016 0%,#163a20 55%,#0d1a12 100%);
+  border:1px solid var(--border2);
+  display:flex;align-items:flex-end;padding:28px 28px 28px;
+  margin-bottom:28px;
+}
+/* hero supports an optional background image named hero.jpg / hero.png / hero.webp dropped in repo root */
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:var(--hero-bg-img,none);
+  background-size:cover;background-position:center;
+  opacity:.25;
+}
+.hero-content{position:relative;z-index:1;max-width:62%}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--em-dim);color:var(--em3);
+  font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  margin-bottom:10px;border:1px solid var(--em);
+}
+.hero h1{font-size:clamp(1.2rem,3vw,1.7rem);font-weight:700;line-height:1.25;margin-bottom:8px}
+.hero p{color:var(--text2);font-size:13.5px;margin-bottom:16px;line-height:1.55}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.hero-deco{
+  position:absolute;right:24px;bottom:20px;
+  font-size:clamp(32px,6vw,54px);opacity:.22;
+  line-height:1;pointer-events:none;text-align:right;
+}
+
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:16px;opacity:0;pointer-events:none;
+  transition:opacity .22s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--r2);
+  width:100%;max-width:450px;max-height:90vh;overflow-y:auto;
+  padding:26px;position:relative;
+  transform:translateY(10px);transition:transform .22s;
+}
+.overlay.open .modal{transform:translateY(0)}
+.modal-close{
+  position:absolute;top:13px;right:13px;
+  width:30px;height:30px;border-radius:7px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--text3);
+  transition:background var(--transition),color var(--transition);
+}
+.modal-close:hover{color:var(--text);border-color:var(--border2);background:var(--card)}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.modal .sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.fg{margin-bottom:14px}
+.fg label{font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{
+  width:100%;background:var(--bg3);
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:8px 12px;font-size:13.5px;color:var(--text);outline:none;
+  transition:border-color var(--transition);
+}
+.fg input:focus,.fg select,.fg textarea:focus{border-color:var(--em);box-shadow:0 0 0 2px rgba(34,197,94,.1)}
+.fg textarea{resize:vertical;min-height:80px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--danger);font-size:12px;margin-top:5px;display:none}
+.suc{
+  background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.28);
+  color:var(--em3);border-radius:var(--r);
+  padding:10px 14px;font-size:13px;display:none;margin-top:10px;
+}
+.modal-foot{text-align:center;margin-top:14px;font-size:12.5px;color:var(--text3)}
+.modal-foot a{color:var(--em);cursor:pointer}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:22px;right:20px;z-index:300;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:var(--r2);
+  padding:11px 16px;display:flex;align-items:center;gap:9px;
+  font-size:13.5px;max-width:min(320px,92vw);
+  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  transform:translateY(16px);opacity:0;
+  transition:all .28s ease;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+
+/* ═══════════════════════════════════════════
+   MOBILE DRAWER / BACKDROP
+═══════════════════════════════════════════ */
+.backdrop{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);z-index:39;
+}
+.backdrop.open{display:block}
+
+/* ═══════════════════════════════════════════
+   INPUT SEARCH (standalone)
+═══════════════════════════════════════════ */
+.search-field{
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;margin-bottom:18px;
+}
+.search-field input{
+  flex:1;min-width:180px;max-width:340px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:7px 12px;
+  font-size:13px;color:var(--text);outline:none;
+  transition:border-color var(--transition);
+}
+.search-field input:focus{border-color:var(--em)}
+.search-field select{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:7px 10px;
+  font-size:13px;color:var(--text);outline:none;
+  min-width:120px;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.site-footer{
+  margin-top:32px;padding:20px 0 8px;
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.footer-links a{color:var(--em);transition:color var(--transition)}
+.footer-links a:hover{color:var(--em3)}
+.footer-copy{font-size:11.5px;color:var(--text3);line-height:1.6}
+
+/* ═══════════════════════════════════════════
+   IMAGE HELPER  — works with GitHub Pages
+   Images placed in repo root are referenced
+   as just the filename. We inject the base
+   path dynamically at runtime so nothing
+   breaks whether hosted locally or on GH Pages.
+═══════════════════════════════════════════ */
+/* handled in JS via getImg() */
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════ */
+
+/* ── XL desktop ≥ 1280px ── */
+@media(min-width:1280px){
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .nc-grid{grid-template-columns:repeat(5,1fr)}
+  .page{padding:28px 32px 64px}
+}
+
+/* ── Desktop 1024–1279px ── */
+@media(max-width:1279px){
+  :root{--sidebar-w:210px}
+  .nc-grid{grid-template-columns:repeat(5,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── Laptop / large tablet 769–1023px ── */
+@media(max-width:1023px){
+  :root{--sidebar-w:190px}
+  .nc-grid{grid-template-columns:repeat(3,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .page{padding:20px 18px 56px}
+}
+
+/* ── Tablet 600–768px ── */
+@media(max-width:768px){
+  /* Hide sidebar, show as drawer */
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    transform:translateX(-100%);
+    box-shadow:4px 0 24px rgba(0,0,0,.5);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex}
+  .main{width:100%}
+  /* Nav section cards: 3 columns on tablet */
+  .nc-grid{grid-template-columns:repeat(3,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .hero{min-height:200px;padding:20px}
+  .hero-content{max-width:80%}
+  .hero-deco{font-size:32px;right:14px;bottom:14px}
+  .s-card{flex-direction:column}
+  .s-actions{flex-direction:row;align-items:center}
+  .page{padding:16px 14px 56px}
+  .fr{grid-template-columns:1fr}
+}
+
+/* ── Mobile 480–599px ── */
+@media(max-width:599px){
+  .nc-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .a-card{display:flex;flex-direction:row;align-items:stretch}
+  .a-thumb{width:90px;min-width:90px;height:auto;flex-shrink:0;border-radius:0}
+  .hero h1{font-size:1.15rem}
+  .topbar{padding:0 12px}
+  .page{padding:14px 12px 56px}
+  .search-box{max-width:180px}
+  .s-card{padding:14px}
+}
+
+/* ── Small mobile < 400px ── */
+@media(max-width:399px){
+  :root{--sidebar-w:85vw}
+  .nc-grid{grid-template-columns:1fr 1fr}
+  .nc{padding:14px 10px}
+  .hero{padding:16px}
+  .hero-content{max-width:100%}
+  .hero-deco{display:none}
+  .topbar{gap:7px}
+  .search-box input{padding-left:28px;font-size:12px}
+  .tb-right .ico-btn:last-child{display:none}
+}
+
+/* ── Touch: larger tap targets ── */
+@media(hover:none){
+  .nav-item{padding:11px 16px}
+  .btn{padding:9px 18px}
+  .btn-s{padding:7px 13px}
+  .flt{padding:6px 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     APP SHELL
+══════════════════════════════════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">⛏️</div>
+      <div class="logo-name">Amine<em>Hub</em></div>
+    </div>
+
+    <nav class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" id="ni-home"    onclick="go('home')"        role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">🏠</span>Home</div>
+      <div class="nav-item"        id="ni-info"    onclick="go('info')"        role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">📰</span>Information</div>
+      <div class="nav-item"        id="ni-members" onclick="go('members')"     role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">👥</span>Members</div>
+      <div class="nav-item"        id="ni-comm"    onclick="go('community')"   role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">💬</span>Community</div>
+      <div class="nav-item"        id="ni-servers" onclick="go('servers')"     role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">🌐</span>Servers</div>
+      <div class="nav-item"        id="ni-rules"   onclick="go('rules')"       role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">📜</span>Rules</div>
+    </nav>
+
+    <div class="nav-sep"></div>
+
+    <nav class="nav-group">
+      <div class="nav-label">Account</div>
+      <div class="nav-item" id="ni-login"  onclick="openM('login')"  role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">🔐</span>Sign In</div>
+      <div class="nav-item" id="ni-signup" onclick="openM('signup')" role="menuitem" tabindex="0"><span class="nav-icon" aria-hidden="true">✨</span>Sign Up</div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-pill" id="userPill" onclick="openM('login')" role="button" aria-label="Account">
+        <div class="av" id="sideAv">?</div>
+        <div style="min-width:0">
+          <div class="uname" id="sideName">Guest</div>
+          <div class="urole" id="sideRole">Not signed in</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <header class="topbar" role="banner">
+      <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" aria-label="Open menu" aria-expanded="false">☰</button>
+      <div class="search-box" role="search">
+        <span class="search-ico" aria-hidden="true">🔍</span>
+        <input type="search" id="gSearch" placeholder="Search AmineHub…" aria-label="Search" onkeydown="globalSearch(event)">
+      </div>
+      <div class="tb-right">
+        <button class="ico-btn" title="Notifications" onclick="toast('No new notifications','ℹ️')" aria-label="Notifications">
+          🔔<span class="notif-dot"></span>
+        </button>
+        <button class="ico-btn" title="Settings" onclick="go('rules')" aria-label="Settings">⚙️</button>
+        <button class="btn btn-p btn-s" id="tbSignup" onclick="openM('signup')">Sign Up</button>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="page" id="page" role="main"></main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODALS
+══════════════════════════════════ -->
+
+<!-- LOGIN -->
+<div class="overlay" id="loginM" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('login')" aria-label="Close">✕</button>
+    <h2 id="loginTitle">Welcome back</h2>
+    <p class="sub">Sign in to your AmineHub account</p>
+    <div class="fg"><label for="liU">Email or username</label><input id="liU" type="text" placeholder="steve@example.com" autocomplete="username"></div>
+    <div class="fg"><label for="liP">Password</label><input id="liP" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div class="err" id="liErr">Invalid credentials — please try again.</div>
+    </div>
+    <button class="btn btn-p btn-full" onclick="doLogin()">Sign In</button>
+    <div class="suc" id="liSuc">Signed in successfully!</div>
+    <div class="modal-foot">No account? <a onclick="closeM('login');openM('signup')">Sign up</a> &nbsp;·&nbsp; <a onclick="closeM('login');openM('forgot')">Forgot password</a></div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div class="overlay" id="signupM" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('signup')" aria-label="Close">✕</button>
+    <h2 id="signupTitle">Create your account</h2>
+    <p class="sub">Join thousands of Minecraft players on AmineHub</p>
+    <div class="fr">
+      <div class="fg"><label for="suU">Username</label><input id="suU" type="text" placeholder="Steve123" autocomplete="username"></div>
+      <div class="fg"><label for="suE">Email</label><input id="suE" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label for="suP">Password</label><input id="suP" type="password" placeholder="Min. 8 characters" autocomplete="new-password"></div>
+      <div class="fg"><label for="suP2">Confirm password</label><input id="suP2" type="password" placeholder="Repeat" autocomplete="new-password"></div>
+    </div>
+    <div class="err" id="suErr" style="display:none;margin-bottom:8px"></div>
+    <button class="btn btn-p btn-full" onclick="doSignup()">Create Account</button>
+    <div class="suc" id="suSuc">Account created! Welcome to AmineHub 🎉</div>
+    <div class="modal-foot">By signing up you agree to our <a onclick="closeM('signup');go('rules')">Community Rules</a></div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD -->
+<div class="overlay" id="forgotM" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('forgot')" aria-label="Close">✕</button>
+    <h2 id="forgotTitle">Reset your password</h2>
+    <p class="sub">Enter your email and we'll send a reset link.</p>
+    <div class="fg"><label for="fpE">Email address</label><input id="fpE" type="email" placeholder="you@example.com"></div>
+    <button class="btn btn-p btn-full" onclick="doForgot()">Send Reset Link</button>
+    <div class="suc" id="fpSuc">If that email exists, a reset link has been sent.</div>
+  </div>
+</div>
+
+<!-- NEW POST -->
+<div class="overlay" id="postM" role="dialog" aria-modal="true" aria-labelledby="postTitle">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" onclick="closeM('post')" aria-label="Close">✕</button>
+    <h2 id="postTitle">New Community Post</h2>
+    <p class="sub">Share something with the AmineHub community</p>
+    <div class="fg"><label for="pCat">Category</label>
+      <select id="pCat">
+        <option>General</option><option>Builds</option><option>Survival</option>
+        <option>Redstone</option><option>Screenshots</option><option>Question</option>
+      </select>
+    </div>
+    <div class="fg"><label for="pTit">Title</label><input id="pTit" type="text" placeholder="What's on your mind?"></div>
+    <div class="fg"><label for="pBod">Content</label><textarea id="pBod" rows="4" placeholder="Share your story, build, question or tip…"></textarea></div>
+    <div class="err" id="pErr" style="display:none">Title and content are required.</div>
+    <button class="btn btn-p btn-full" onclick="submitPost()">Publish Post</button>
+  </div>
+</div>
+
+<!-- SUGGEST SERVER -->
+<div class="overlay" id="srvM" role="dialog" aria-modal="true" aria-labelledby="srvTitle">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" onclick="closeM('srv')" aria-label="Close">✕</button>
+    <h2 id="srvTitle">Suggest a Server</h2>
+    <p class="sub">Submissions are reviewed before appearing publicly.</p>
+    <div class="fr">
+      <div class="fg"><label for="svN">Server Name</label><input id="svN" type="text" placeholder="My Awesome SMP"></div>
+      <div class="fg"><label for="svEd">Edition</label><select id="svEd"><option>Java</option><option>Bedrock</option><option>Both</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label for="svIp">Server IP</label><input id="svIp" type="text" placeholder="play.myserver.net"></div>
+      <div class="fg"><label for="svPt">Port (optional)</label><input id="svPt" type="number" placeholder="25565"></div>
+    </div>
+    <div class="fg"><label for="svDs">Description</label><textarea id="svDs" rows="3" placeholder="What makes your server unique?"></textarea></div>
+    <div class="err" id="svErr" style="display:none">Name, IP and description are required.</div>
+    <button class="btn btn-p btn-full" onclick="submitServer()">Submit for Review</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="alert" aria-live="polite">
+  <span id="toastIco">✅</span>
+  <span id="toastMsg">Done!</span>
+</div>
+
+<!-- ══════════════════════════════════
+     SCRIPT
+══════════════════════════════════ -->
+<script>
+'use strict';
+/* ─────────────────────────────────────────
+   GITHUB PAGES — ASSET PATH RESOLVER
+   Drop any image file directly in the repo
+   root alongside index.html. Reference it
+   in the data below as just the filename
+   e.g. "hero.jpg". getImg(filename) builds
+   the correct URL for both localhost and
+   GitHub Pages (username.github.io/repo/).
+───────────────────────────────────────── */
+const BASE = (() => {
+  const loc = window.location;
+  // On GitHub Pages the pathname starts with /repo-name/
+  // On localhost it's just /
+  const parts = loc.pathname.split('/').filter(Boolean);
+  // If hosted at root (custom domain or localhost) base is '/'
+  // If hosted at /repo/ base is '/repo/'
+  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return './';
+  // GitHub Pages: origin/repo-name/
+  return parts.length > 0 ? '/' + parts[0] + '/' : '/';
+})();
+
+function getImg(filename) {
+  // Returns a full path that works on GitHub Pages or localhost
+  if (!filename) return null;
+  if (filename.startsWith('http://') || filename.startsWith('https://') || filename.startsWith('data:')) return filename;
+  return BASE + filename;
+}
+
+function imgTag(filename, alt, style='') {
+  if (!filename) return '';
+  return `<img src="${getImg(filename)}" alt="${alt}" loading="lazy" onerror="this.style.display='none'" ${style ? `style="${style}"` : ''}>`;
+}
+
+/* ─────────────────────────────────────────
+   DATA  — edit these objects to customise
+   content. For images: drop the file in
+   the repo root, put just the filename here.
+───────────────────────────────────────── */
+const SITE = {
+  name: 'AmineHub',
+  tagline: 'Your Minecraft Universe',
+  // Optional: drop a hero image in your repo root and set the filename here
+  heroBg: '', // e.g. 'hero.jpg'
+  // Optional: site logo image
+  logoImg: '', // e.g. 'logo.png'
+};
+
+const ARTICLES = [
+  {id:1,title:"Java Edition 1.21.4 — What's New",cat:'Update',tag:'tg',emoji:'🌿',date:'Oct 15 2026',sum:'The latest Java snapshot introduces the Pale Garden biome, Creaking mob, and new wood type. Everything you need to know.',type:'Official',src:'minecraft.net',img:''}, // img: e.g. 'article1.jpg'
+  {id:2,title:'Top 10 Survival Tips for New Players',cat:'Guide',tag:'tb',emoji:'⚔️',date:'Oct 12 2026',sum:'Starting out in Minecraft can feel overwhelming. These ten tips will help you thrive from your first night to the End.',type:'Editorial',src:'AmineHub',img:''},
+  {id:3,title:'Best Mods for 2026 — Community Picks',cat:'Mods',tag:'ta',emoji:'🔧',date:'Oct 10 2026',sum:'From Create to Iris shaders, the community voted on their favourite mods this year. Are your picks on the list?',type:'Community',src:'AmineHub',img:''},
+  {id:4,title:'Building the Ultimate Underwater Base',cat:'Builds',tag:'tp',emoji:'🌊',date:'Oct 8 2026',sum:'Step-by-step guide to constructing a massive underwater megabase — including conduit power and interior design tips.',type:'Guide',src:'AmineHub',img:''},
+  {id:5,title:'Redstone Farms That Print XP',cat:'Redstone',tag:'tr',emoji:'🔴',date:'Oct 5 2026',sum:'Fully automatic XP farms that keep your enchanting table maxed and supply repairs indefinitely.',type:'Community',src:'AmineHub',img:''},
+  {id:6,title:'Texture Pack Showdown: Faithful vs PureBDCraft',cat:'Resource Packs',tag:'tp',emoji:'🎨',date:'Oct 3 2026',sum:'Side-by-side comparison of two community favourites — which pack transforms your world without killing performance?',type:'Editorial',src:'AmineHub',img:''},
+];
+
+const MEMBERS = [
+  {id:1,username:'CreeperSlayer99',bio:'Survival specialist & redstone engineer',edition:'Java',badges:['⚔️ Veteran','🏆 Builder'],posts:142,joined:'Jan 2024',img:''},
+  {id:2,username:'DiamondQueen_',bio:'Building megastructures one block at a time 🏗️',edition:'Java',badges:['🏆 Builder'],posts:87,joined:'Mar 2024',img:''},
+  {id:3,username:'NetherWalker',bio:'PvP champion and Nether explorer 🔥',edition:'Bedrock',badges:['🥇 Champion'],posts:203,joined:'Nov 2023',img:''},
+  {id:4,username:'PixelPanda42',bio:'Pixel art creator and map maker 🎨',edition:'Both',badges:['🎨 Artist'],posts:56,joined:'Jun 2024',img:''},
+  {id:5,username:'EnchantMaster',bio:'Max enchanted everything. AMA.',edition:'Java',badges:['⚔️ Veteran','📚 Scholar'],posts:319,joined:'Aug 2023',img:''},
+  {id:6,username:'BiomeExplorer_',bio:'100% biome completion speedrunner 🌍',edition:'Java',badges:['🏃 Speedrunner'],posts:71,joined:'Apr 2024',img:''},
+];
+
+let POSTS = [
+  {id:1,author:'CreeperSlayer99',cat:'Builds',title:'My 1-year survival world — full tour inside!',body:'After 365 days I\'ve finally finished my mega-castle. It took 80,000 stone bricks, 12,000 wood planks, and way too many late nights. Every room has a purpose — including the hidden vault.',likes:34,liked:false,time:'2h ago'},
+  {id:2,author:'DiamondQueen_',cat:'Question',title:'Best Y level for diamonds in 1.21?',body:'I keep getting different answers — is Y -58 still the sweet spot for diamond mining in the latest version? Drop your tested coordinates below!',likes:21,liked:false,time:'5h ago'},
+  {id:3,author:'NetherWalker',cat:'Survival',title:'Nether fortress speedrun strats — no cheats',body:'Found a route that gets you blaze rods and nether warts in under 4 minutes from world spawn. The key is setting your spawn immediately and heading straight east in the Nether.',likes:45,liked:false,time:'1d ago'},
+  {id:4,author:'PixelPanda42',cat:'Builds',title:'2500-block pixel art of a Creeper — WIP',body:'Working on the largest pixel art piece I\'ve ever attempted. Currently 60% complete. The shading with different green wools has been a challenge but it\'s coming together beautifully!',likes:89,liked:false,time:'2d ago'},
+];
+
+const SERVERS = [
+  {id:1,name:'HyperMC SMP',icon:'⚔️',img:'',desc:'Semi-vanilla survival with land claiming, shops, and weekly events. A welcoming community for all skill levels.',edition:'Java',ver:'1.21.x',ip:'play.hypermc.net',port:'25565',region:'EU',cat:'SMP',verified:true},
+  {id:2,name:'BlockCity Skyblock',icon:'🌤️',img:'',desc:'Custom skyblock with 50+ challenges, a prestige system, and dedicated PvP arenas.',edition:'Java',ver:'1.20 – 1.21',ip:'skyblock.blockcity.gg',port:'',region:'NA',cat:'Skyblock',verified:true},
+  {id:3,name:'BedrockRealms+',icon:'🪨',img:'',desc:'Bedrock-compatible cross-platform survival. One of the largest Bedrock communities with active staff.',edition:'Bedrock',ver:'1.21.x',ip:'bedrock.realmsplus.net',port:'19132',region:'Global',cat:'Survival',verified:false},
+  {id:4,name:'PvP Arena Pro',icon:'🏹',img:'',desc:'Competitive PvP with ranked seasons, a 1v1 ladder, and team tournaments every weekend.',edition:'Java',ver:'1.8 – 1.21',ip:'pvp.arenacraft.org',port:'25565',region:'NA',cat:'PvP',verified:true},
+];
+
+/* ─────────────────────────────────────────
+   AUTH — localStorage-based demo
+───────────────────────────────────────── */
+let DB_USERS = JSON.parse(localStorage.getItem('ah_users') || '[]');
+let CU = null; // current user
+
+function saveUsers() { localStorage.setItem('ah_users', JSON.stringify(DB_USERS)); }
+
+function doLogin() {
+  const u = _v('liU'), p = _v('liP');
+  _hide('liErr'); _hide('liSuc');
+  if (!u || !p) { _show('liErr', 'Please fill in all fields.'); return; }
+  const found = DB_USERS.find(x => x.username === u || x.email === u);
+  if (!found || found.password !== btoa(p)) { _show('liErr', 'Invalid credentials — please try again.'); return; }
+  CU = found; _show('liSuc');
+  setTimeout(() => { closeM('login'); refreshAuth(); go('home'); }, 800);
+}
+
+function doSignup() {
+  const u=_v('suU'),e=_v('suE'),p=_v('suP'),p2=_v('suP2');
+  _hide('suErr'); _hide('suSuc');
+  if (!u||!e||!p||!p2) { _showErr('suErr','Please fill in all fields.'); return; }
+  if (p !== p2) { _showErr('suErr','Passwords do not match.'); return; }
+  if (p.length < 8) { _showErr('suErr','Password must be at least 8 characters.'); return; }
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(u)) { _showErr('suErr','Username: 3–20 characters, letters/numbers/underscores only.'); return; }
+  if (DB_USERS.find(x=>x.username===u)) { _showErr('suErr','Username already taken.'); return; }
+  if (DB_USERS.find(x=>x.email===e)) { _showErr('suErr','Email already registered.'); return; }
+  const nu = {username:u,email:e,password:btoa(p),bio:'',edition:'Java',badges:['🌱 New'],posts:0,joined:new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'}),img:''};
+  DB_USERS.push(nu); saveUsers(); CU = nu;
+  _show('suSuc');
+  setTimeout(() => { closeM('signup'); refreshAuth(); go('home'); }, 1000);
+}
+
+function doForgot() {
+  const e = _v('fpE');
+  if (!e) { toast('Enter your email first','⚠️'); return; }
+  _show('fpSuc');
+  setTimeout(() => closeM('forgot'), 2000);
+}
+
+function doLogout() {
+  CU = null; refreshAuth(); go('home'); toast('Signed out successfully','👋');
+}
+
+function refreshAuth() {
+  const loggedIn = !!CU;
+  // Topbar signup btn
+  const tbS = document.getElementById('tbSignup');
+  if (tbS) tbS.style.display = loggedIn ? 'none' : '';
+  // Sidebar account items
+  const niLogin = document.getElementById('ni-login');
+  const niSignup = document.getElementById('ni-signup');
+  if (loggedIn) {
+    niLogin.innerHTML = '<span class="nav-icon" aria-hidden="true">🚪</span>Sign Out';
+    niLogin.onclick = doLogout;
+    if (niSignup) niSignup.style.display = 'none';
+  } else {
+    niLogin.innerHTML = '<span class="nav-icon" aria-hidden="true">🔐</span>Sign In';
+    niLogin.onclick = () => openM('login');
+    if (niSignup) niSignup.style.display = '';
+  }
+  // Sidebar user pill
+  const av = document.getElementById('sideAv');
+  const nm = document.getElementById('sideName');
+  const rl = document.getElementById('sideRole');
+  if (loggedIn) {
+    av.textContent = CU.username[0].toUpperCase();
+    nm.textContent = CU.username;
+    rl.textContent = 'Member';
+    document.getElementById('userPill').onclick = doLogout;
+  } else {
+    av.textContent = '?';
+    nm.textContent = 'Guest';
+    rl.textContent = 'Not signed in';
+    document.getElementById('userPill').onclick = () => openM('login');
+  }
+}
+
+/* ─────────────────────────────────────────
+   MODAL HELPERS
+───────────────────────────────────────── */
+function openM(id) { document.getElementById(id+'M').classList.add('open'); }
+function closeM(id) { document.getElementById(id+'M').classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+});
+
+/* ─────────────────────────────────────────
+   TOAST
+───────────────────────────────────────── */
+let _tt;
+function toast(msg, ico='✅') {
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIco').textContent = ico;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────── */
+function toggleSidebar() {
+  const s = document.getElementById('sidebar');
+  const b = document.getElementById('backdrop');
+  const open = s.classList.toggle('open');
+  b.classList.toggle('open', open);
+  document.getElementById('menuBtn').setAttribute('aria-expanded', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+}
+
+/* ─────────────────────────────────────────
+   NAVIGATION
+───────────────────────────────────────── */
+const PAGE_MAP = { home:'home', info:'info', members:'members', community:'comm', servers:'servers', rules:'rules' };
+let CUR = 'home';
+
+function go(page) {
+  CUR = page;
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const ni = document.getElementById('ni-' + (PAGE_MAP[page] || page));
+  if (ni) ni.classList.add('active');
+  // Render page
+  const el = document.getElementById('page');
+  el.innerHTML = (PAGES[page] || PAGES.home)();
+  el.scrollTop = 0;
+  closeSidebar();
+  // Update hero bg image if set
+  if (page === 'home' && SITE.heroBg) {
+    const hb = document.getElementById('heroBgEl');
+    if (hb) hb.style.backgroundImage = `url('${getImg(SITE.heroBg)}')`;
+  }
+}
+
+function globalSearch(e) {
+  if (e.key !== 'Enter') return;
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) return;
+  toast(`Searching for "${q}"…`, '🔍');
+  if (/server|ip|play\.|\.net|\.gg/.test(q)) go('servers');
+  else if (/rule|ban|guideline|policy/.test(q)) go('rules');
+  else if (/member|player|user/.test(q)) go('members');
+  else if (/post|build|survival|community/.test(q)) go('community');
+  else go('info');
+}
+
+/* ─────────────────────────────────────────
+   COPY IP
+───────────────────────────────────────── */
+function copyIP(ip, sid) {
+  const fallback = () => { toast('Copy: ' + ip, '📋'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ip).then(() => {
+      toast('Server IP copied!','📋');
+      const tip = document.getElementById('ct'+sid);
+      if (tip) { tip.classList.add('show'); setTimeout(()=>tip.classList.remove('show'),2000); }
+    }).catch(fallback);
+  } else { fallback(); }
+}
+
+/* ─────────────────────────────────────────
+   POSTS
+───────────────────────────────────────── */
+function toggleLike(id) {
+  if (!CU) { toast('Sign in to like posts','🔒'); return; }
+  const p = POSTS.find(x=>x.id===id);
+  if (!p) return;
+  p.liked = !p.liked;
+  p.likes += p.liked ? 1 : -1;
+  const btn = document.getElementById('lb'+id);
+  const cnt = document.getElementById('lc'+id);
+  if (btn) btn.classList.toggle('liked', p.liked);
+  if (cnt) cnt.textContent = p.likes;
+}
+function submitPost() {
+  if (!CU) { closeM('post'); openM('login'); return; }
+  const cat=_v('pCat'), tit=_v('pTit').trim(), bod=_v('pBod').trim();
+  if (!tit||!bod) { _showErr('pErr','Title and content are required.'); return; }
+  _hide('pErr');
+  POSTS.unshift({id:Date.now(),author:CU.username,cat,title:tit,body:bod,likes:0,liked:false,time:'Just now'});
+  closeM('post'); go('community'); toast('Post published! 🎉','✅');
+}
+function delPost(id) {
+  if (!CU) return;
+  POSTS = POSTS.filter(p=>p.id!==id);
+  go('community'); toast('Post deleted','🗑️');
+}
+function submitServer() {
+  const n=_v('svN').trim(), ip=_v('svIp').trim(), ds=_v('svDs').trim();
+  if (!n||!ip||!ds) { _showErr('svErr','Name, IP and description are required.'); return; }
+  _hide('svErr'); closeM('srv'); toast('Server submitted for review! We\'ll get back to you soon.','✅');
+}
+
+/* ─────────────────────────────────────────
+   TEMPLATE HELPERS
+───────────────────────────────────────── */
+function _v(id) { return (document.getElementById(id)||{}).value || ''; }
+function _hide(id) { const el=document.getElementById(id); if(el){el.style.display='none';} }
+function _show(id, txt) { const el=document.getElementById(id); if(el){el.style.display='block';if(txt!==undefined)el.textContent=txt;} }
+function _showErr(id, txt) { const el=document.getElementById(id); if(el){el.style.display='block';el.textContent=txt;} }
+function requireAuth(fn) { if (CU) fn(); else { toast('Please sign in first','🔒'); openM('login'); } }
+
+/* ─────────────────────────────────────────
+   CARD BUILDERS
+───────────────────────────────────────── */
+function artCard(a) {
+  const imgHtml = a.img ? imgTag(a.img, a.title, 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover') : '';
+  return `<div class="a-card" onclick="showArticle(${a.id})" role="article" tabindex="0" onkeydown="if(event.key==='Enter')showArticle(${a.id})">
+    <div class="a-thumb">${imgHtml}<span style="position:relative;z-index:1;font-size:44px${a.img?';display:none':''}">${a.emoji}</span></div>
+    <div class="a-meta">
+      <span class="tag ${a.tag}">${a.cat}</span>
+      <span class="tag ${a.type==='Official'?'tb':a.type==='Community'?'tg':'ta'}">${a.type}</span>
+      <span style="margin-left:auto;font-size:10.5px">${a.date}</span>
+    </div>
+    <div class="a-body">
+      <div class="a-title">${a.title}</div>
+      <div class="a-sum">${a.sum.slice(0,95)}…</div>
+      <div style="margin-top:7px;font-size:11px;color:var(--text3)">Source: ${a.src}</div>
+    </div>
+  </div>`;
+}
+
+function memCard(m) {
+  const isMe = CU && CU.username === m.username;
+  const avContent = m.img ? imgTag(m.img, m.username) : m.username[0].toUpperCase();
+  return `<div class="m-card">
+    <div class="av lg">${avContent}</div>
+    <div class="m-info">
+      <div class="m-name">${m.username}${isMe?` <span class="tag tg" style="font-size:9.5px">you</span>`:''}</div>
+      <div class="m-bio">${m.bio || 'No bio yet.'}</div>
+      <div class="m-stat">⛏️ ${m.edition} &nbsp;·&nbsp; 📝 ${m.posts} posts &nbsp;·&nbsp; 📅 ${m.joined}</div>
+      <div class="m-badges">${m.badges.map(b=>`<span class="tag tg" style="font-size:10px">${b}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function postCard(p) {
+  const isOwn = CU && CU.username === p.author;
+  return `<div class="p-card">
+    <div class="p-head">
+      <div class="av">${p.author[0]}</div>
+      <div class="p-head-meta">
+        <div style="font-weight:600;font-size:13.5px">${p.author}</div>
+        <div style="font-size:11.5px;color:var(--text3)">${p.time} &nbsp;·&nbsp; <span class="tag tg" style="font-size:10px">${p.cat}</span></div>
+      </div>
+      ${isOwn?`<button class="btn btn-d btn-s" onclick="delPost(${p.id})">🗑 Delete</button>`:''}
+    </div>
+    <div class="p-title">${p.title}</div>
+    <div class="p-body">${p.body}</div>
+    <div class="p-actions">
+      <button class="like-btn ${p.liked?'liked':''}" id="lb${p.id}" onclick="toggleLike(${p.id})">❤️ <span id="lc${p.id}">${p.likes}</span></button>
+      <button class="btn btn-g btn-s" onclick="toast('Comments coming soon!','💬')">💬 Comment</button>
+      <button class="btn btn-g btn-s" onclick="toast('Report submitted to moderators','🚩')">🚩 Report</button>
+    </div>
+  </div>`;
+}
+
+function serverCard(s) {
+  const addr = s.ip + (s.port ? ':' + s.port : '');
+  const iconContent = s.img ? imgTag(s.img, s.name) : s.icon;
+  return `<div class="s-card">
+    <div class="s-icon">${iconContent}</div>
+    <div class="s-info">
+      <div class="s-name">${s.name}${s.verified?` <span class="tag tg" style="font-size:10px">✓ Verified</span>`:''}</div>
+      <div class="s-desc">${s.desc}</div>
+      <div class="s-meta">
+        <span class="tag tb">${s.edition}</span>
+        <span class="tag ta">${s.ver}</span>
+        <span class="tag tg">${s.cat}</span>
+        <span style="font-size:11.5px;color:var(--text3)">🌍 ${s.region}</span>
+      </div>
+      <div class="s-ip" title="${addr}">${addr}</div>
+    </div>
+    <div class="s-actions">
+      <div class="copy-wrap">
+        <button class="btn btn-p btn-s" onclick="copyIP('${addr}',${s.id})">📋 Copy IP</button>
+        <div class="copy-tip" id="ct${s.id}">Copied!</div>
+      </div>
+      <button class="btn btn-o btn-s" onclick="toast('Server IP: ${addr}','🌐')">Info</button>
+    </div>
+  </div>`;
+}
+
+/* ─────────────────────────────────────────
+   PAGES
+───────────────────────────────────────── */
+const PAGES = {
+
+/* ── HOME ── */
+home: () => `
+<div class="hero" id="heroEl">
+  <div class="hero-bg" id="heroBgEl"></div>
+  <div class="hero-content">
+    <div class="hero-pill">🌿 Featured</div>
+    <h1>Welcome to ${SITE.name} — ${SITE.tagline}</h1>
+    <p>News, community posts, server listings and more — all in one place.</p>
+    <div class="hero-btns">
+      <button class="btn btn-p" onclick="go('info')">📰 Explore News</button>
+      <button class="btn btn-o" onclick="go('servers')">🌐 Find Servers</button>
+    </div>
+  </div>
+  <div class="hero-deco" aria-hidden="true">⛏️<br>🌿💎</div>
+</div>
+
+<div class="sec-head"><h2>Quick <em>Navigate</em></h2></div>
+<div class="nc-grid">
+  ${[
+    ['📰','Information','News, updates, snapshots & guides','go(\'info\')'],
+    ['👥','Members','Browse player profiles & badges','go(\'members\')'],
+    ['💬','Community','Posts, builds & discussions','go(\'community\')'],
+    ['🌐','Servers','Find multiplayer servers','go(\'servers\')'],
+    ['📜','Rules','Guidelines & moderation','go(\'rules\')'],
+  ].map(([ico,title,desc,act])=>`<div class="nc" onclick="${act}"><div class="nc-icon" aria-hidden="true">${ico}</div><div class="nc-title">${title}</div><div class="nc-desc">${desc}</div></div>`).join('')}
+</div>
+
+<div class="divider"></div>
+<div class="sec-head"><h2>Latest <em>Articles</em></h2><button class="btn btn-g btn-s" onclick="go('info')">See all →</button></div>
+<div class="grid-3" style="margin-bottom:28px">
+  ${ARTICLES.slice(0,3).map(artCard).join('')}
+</div>
+
+<div class="divider"></div>
+<div class="sec-head"><h2>Recent <em>Community</em> Posts</h2><button class="btn btn-g btn-s" onclick="go('community')">See all →</button></div>
+${POSTS.slice(0,2).map(postCard).join('')}
+
+<div class="site-footer">
+  <div class="footer-links">
+    <a onclick="go('info')">Information</a>
+    <a onclick="go('members')">Members</a>
+    <a onclick="go('community')">Community</a>
+    <a onclick="go('servers')">Servers</a>
+    <a onclick="go('rules')">Rules</a>
+  </div>
+  <div class="footer-copy">
+    ${SITE.name} · Independent Minecraft community · Not affiliated with Mojang Studios or Microsoft<br>
+    Minecraft® is a trademark of Mojang Studios
+  </div>
+</div>`,
+
+/* ── INFO ── */
+info: () => {
+  const CATS = ['All','Update','Guide','Mods','Builds','Redstone','Resource Packs'];
+  return `<div class="sec-head"><h2>📰 <em>Information</em> Hub</h2><span style="font-size:12.5px;color:var(--text3)">News, guides & updates</span></div>
+<div class="filter-row" id="infoFilters">
+  ${CATS.map((c,i)=>`<button class="flt${i===0?' on':''}" onclick="filterArts('${c}',this)">${c}</button>`).join('')}
+</div>
+<div style="margin-bottom:18px"><input type="search" id="artQ" placeholder="🔍  Search articles…" oninput="filterArts(curInfoCat,null)" style="max-width:340px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;font-size:13px;color:var(--text);outline:none"></div>
+<div id="artGrid" class="grid-3">${ARTICLES.map(artCard).join('')}</div>`;
+},
+
+/* ── MEMBERS ── */
+members: () => {
+  const all = buildMemberList();
+  return `<div class="sec-head"><h2>👥 <em>Member</em> Directory</h2>
+  <button class="btn btn-p btn-s" onclick="${CU?`toast('Profile editing coming in next update','✏️')`:`openM('login')`}">✏️ My Profile</button></div>
+<div style="margin-bottom:16px"><input type="search" id="memQ" placeholder="🔍  Search members…" oninput="filterMems()" style="max-width:340px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;font-size:13px;color:var(--text);outline:none"></div>
+<div id="memGrid" class="grid-2">${all.map(memCard).join('')}</div>`;
+},
+
+/* ── COMMUNITY ── */
+community: () => `<div class="sec-head"><h2>💬 <em>Community</em> Feed</h2>
+  <button class="btn btn-p btn-s" onclick="requireAuth(()=>openM('post'))">✍️ New Post</button></div>
+<div class="tabs">
+  <div class="tab on" onclick="filterPosts('All',this)">All</div>
+  <div class="tab" onclick="filterPosts('Builds',this)">Builds</div>
+  <div class="tab" onclick="filterPosts('Question',this)">Q&A</div>
+  <div class="tab" onclick="filterPosts('Survival',this)">Survival</div>
+  <div class="tab" onclick="filterPosts('Redstone',this)">Redstone</div>
+</div>
+<div id="postFeed">${POSTS.length ? POSTS.map(postCard).join('') : emptyState('📭','No posts yet','Be the first to share something with the community!',`requireAuth(()=>openM('post'))`,`Write a Post`)}</div>`,
+
+/* ── SERVERS ── */
+servers: () => `<div class="sec-head"><h2>🌐 <em>Server</em> Directory</h2>
+  <button class="btn btn-p btn-s" onclick="openM('srv')">＋ Suggest Server</button></div>
+<div class="warn-banner">⚠️ Server status is not automatically checked. Verify all addresses before connecting. ${SITE.name} is not affiliated with any listed server.</div>
+<div class="search-field" style="margin-bottom:16px">
+  <input type="search" id="srvQ" placeholder="🔍  Search servers…" oninput="filterSrvs()">
+  <select id="srvEd" onchange="filterSrvs()"><option value="">All Editions</option><option>Java</option><option>Bedrock</option><option>Both</option></select>
+  <select id="srvRg" onchange="filterSrvs()"><option value="">All Regions</option><option>EU</option><option>NA</option><option>Global</option></select>
+</div>
+<div id="srvList">${SERVERS.map(serverCard).join('')}</div>`,
+
+/* ── RULES ── */
+rules: () => `<div class="sec-head"><h2>📜 Community <em>Rules</em></h2></div>
+<div class="warn-banner">⚠️ <strong>${SITE.name} is an independent community project. We are not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft. Minecraft® is a trademark of Mojang Studios.</strong></div>
+${[
+  ['🤝 Respectful Behaviour',['Treat every member with respect regardless of skill level, age, or background.','No harassment, bullying, targeted attacks, or hate speech of any kind.','Personal disputes should be settled privately or escalated to moderators.']],
+  ['🚫 Prohibited Content',['No spam, flooding, or repetitive low-effort posts.','No scam links, phishing attempts, or deceptive URLs.','No advertising non-community servers or products without moderator approval.','No cheating tools, hacked-client promotions, or exploit instructions.','No NSFW or inappropriate content in any section.']],
+  ['🔒 Privacy & Safety',['Never share another member\'s real name, location, or personal information.','Do not expose private messages without consent.','Report any data concern to moderators immediately.']],
+  ['🖼️ Uploads & Content',['Only upload content you created or have permission to share.','Respect intellectual property — credit original creators.','Images up to 5 MB. No executable files.']],
+  ['🌐 Server Listings',['All server information must be accurate. False claims result in removal.','No fabricated player counts or fake reviews.','Verified servers have passed our basic safety checklist.']],
+  ['⚖️ Moderation & Appeals',['Violations may result in warnings, post removal, or account suspension.','Bans are issued for serious or repeated rule-breaking.','Appeal a decision by submitting a report and contacting a moderator.','Moderator decisions are final but reviewable by senior staff.']],
+].map(([t,rules])=>`<div class="rule-block"><h3>${t}</h3><ul>${rules.map(r=>`<li>${r}</li>`).join('')}</ul></div>`).join('')}
+<div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;text-align:center">
+  <div style="font-size:22px;margin-bottom:8px">📬</div>
+  <div style="font-weight:700;margin-bottom:4px">Report a violation</div>
+  <div style="font-size:13px;color:var(--text3);margin-bottom:14px">See something that breaks the rules? Let us know.</div>
+  <button class="btn btn-p" onclick="toast('Report submitted to moderators — thank you.','📨')">Submit a Report</button>
+</div>
+<div class="site-footer"><div class="footer-copy">AmineHub · Independent Minecraft community · Not affiliated with Mojang Studios or Microsoft</div></div>`,
+};
+
+/* ─────────────────────────────────────────
+   ARTICLE DETAIL PAGE
+───────────────────────────────────────── */
+function showArticle(id) {
+  const a = ARTICLES.find(x=>x.id===id);
+  if (!a) return;
+  const el = document.getElementById('page');
+  const imgHtml = a.img ? imgTag(a.img, a.title, 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0') : '';
+  el.innerHTML = `
+<button class="btn btn-g btn-s" style="margin-bottom:18px" onclick="go('info')">← Back to Articles</button>
+<div class="card">
+  <div style="height:200px;background:linear-gradient(135deg,#0d2a1a,#1e4d30);display:flex;align-items:center;justify-content:center;font-size:72px;position:relative;overflow:hidden">
+    ${imgHtml}<span style="position:relative;z-index:1${a.img?';display:none':''}">${a.emoji}</span>
+  </div>
+  <div class="card-body">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <span class="tag ${a.tag}">${a.cat}</span>
+      <span class="tag ${a.type==='Official'?'tb':a.type==='Community'?'tg':'ta'}">${a.type}</span>
+      <span style="font-size:12px;color:var(--text3)">${a.date} · Source: ${a.src}</span>
+    </div>
+    <h1 style="font-size:clamp(1.15rem,3vw,1.45rem);font-weight:700;margin-bottom:12px;line-height:1.3">${a.title}</h1>
+    <p style="color:var(--text4);line-height:1.8;font-size:14.5px">${a.sum}</p>
+    <p style="color:var(--text3);margin-top:14px;font-size:13.5px;line-height:1.75">
+      This is a preview. In a fully deployed version with a backend, this page would load the complete article from the database. Members can bookmark, share, and comment on articles.
+    </p>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-o btn-s" onclick="toast('Bookmarked!','🔖')">🔖 Bookmark</button>
+      <button class="btn btn-g btn-s" onclick="copyIP(window.location.href,0);toast('Link copied','🔗')">🔗 Share</button>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ─────────────────────────────────────────
+   FILTERS
+───────────────────────────────────────── */
+let curInfoCat = 'All';
+function filterArts(cat, btn) {
+  curInfoCat = cat;
+  if (btn) { document.querySelectorAll('#infoFilters .flt').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+  const q = (_v('artQ')||'').toLowerCase();
+  const grid = document.getElementById('artGrid');
+  if (!grid) return;
+  const f = ARTICLES.filter(a=>(cat==='All'||a.cat===cat)&&(!q||a.title.toLowerCase().includes(q)||a.sum.toLowerCase().includes(q)));
+  grid.innerHTML = f.length ? f.map(artCard).join('') : emptyState('🔍','No articles found','Try a different filter or search term.');
+}
+function buildMemberList() {
+  const all = [...MEMBERS];
+  if (CU && !all.find(m=>m.username===CU.username)) {
+    all.push({id:999,username:CU.username,bio:CU.bio||'New member!',edition:CU.edition||'Java',badges:CU.badges||['🌱 New'],posts:CU.posts||0,joined:CU.joined,img:CU.img||''});
+  }
+  return all;
+}
+function filterMems() {
+  const q = (_v('memQ')||'').toLowerCase();
+  const grid = document.getElementById('memGrid');
+  if (!grid) return;
+  const f = buildMemberList().filter(m=>!q||m.username.toLowerCase().includes(q)||m.bio.toLowerCase().includes(q));
+  grid.innerHTML = f.length ? f.map(memCard).join('') : emptyState('👤','No members found','Try a different search term.');
+}
+function filterPosts(cat, btn) {
+  if (btn) { document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on')); btn.classList.add('on'); }
+  const feed = document.getElementById('postFeed');
+  if (!feed) return;
+  const f = cat==='All' ? POSTS : POSTS.filter(p=>p.cat===cat);
+  feed.innerHTML = f.length ? f.map(postCard).join('') : emptyState('📭','No posts here','Be the first to share in this category!',`requireAuth(()=>openM('post'))`,`Write a Post`);
+}
+function filterSrvs() {
+  const q=(_v('srvQ')||'').toLowerCase(), ed=_v('srvEd'), rg=_v('srvRg');
+  const list = document.getElementById('srvList');
+  if (!list) return;
+  const f = SERVERS.filter(s=>
+    (!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q))&&
+    (!ed||s.edition===ed||s.edition==='Both')&&
+    (!rg||s.region===rg));
+  list.innerHTML = f.length ? f.map(serverCard).join('') : emptyState('🌐','No servers found','Try different filters.');
+}
+
+function emptyState(ico, h, txt, action='', btnLabel='') {
+  return `<div class="empty"><div class="empty-ico">${ico}</div><h3>${h}</h3><p>${txt}</p>${action?`<button class="btn btn-p" onclick="${action}">${btnLabel}</button>`:''}</div>`;
+}
+
+/* ─────────────────────────────────────────
+   KEYBOARD NAVIGATION
+───────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.target.classList.contains('nav-item') && (e.key==='Enter'||e.key===' ')) {
+    e.preventDefault(); e.target.click();
+  }
+});
+
+/* ─────────────────────────────────────────
+   BOOT
+───────────────────────────────────────── */
+refreshAuth();
+go('home');
+</script>
+</body>
+</html>
