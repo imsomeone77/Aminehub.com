@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AmineHub — Minecraft Community</title>
+<meta name="description" content="AmineHub — the ultimate Minecraft community. News, guides, servers, member profiles and more.">
+<meta name="theme-color" content="#0d1a12">
+<meta property="og:title" content="AmineHub — Minecraft Community">
+<meta property="og:description" content="News, servers, members and community posts for Minecraft players.">
+<meta property="og:type" content="website">
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════ */
+:root{
+  --bg:#0d1a12;--bg2:#111e16;--bg3:#162010;
+  --card:#1a2b1e;--card2:#1f3324;
+  --border:#2a4030;--border2:#3a5845;
+  --em:#22c55e;--em2:#16a34a;--em3:#4ade80;--em-dim:#14532d;
+  --text:#e8f5e9;--text2:#86efac;--text3:#6b7280;--text4:#d1fae5;
+  --danger:#ef4444;--warn:#f59e0b;
+  --r:10px;--r2:16px;
+  --sidebar-w:230px;
+  --topbar-h:58px;
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --tr:.18s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+img{max-width:100%;height:auto;display:block}
+ul{list-style:none}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;overflow:hidden}
+.sidebar{
+  width:var(--sidebar-w);background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  flex-shrink:0;overflow-y:auto;overflow-x:hidden;
+  z-index:40;transition:transform var(--tr);
+}
+.main{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
+
+/* ════════════════════════════════
+   TOPBAR  — FIXED RESPONSIVE
+════════════════════════════════ */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  height:var(--topbar-h);
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:0 14px;
+  display:flex;align-items:center;gap:8px;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+/* Hamburger */
+.menu-btn{
+  display:none;
+  width:40px;height:40px;min-width:40px;border-radius:9px;
+  background:var(--bg3);border:1px solid var(--border);
+  align-items:center;justify-content:center;
+  font-size:19px;color:var(--text2);flex-shrink:0;
+  transition:background var(--tr);
+}
+.menu-btn:hover{background:var(--card2);color:var(--text)}
+/* Search — grows but has min/max */
+.search-box{
+  flex:1;
+  min-width:0;
+  max-width:340px;
+  position:relative;
+}
+.search-box input{
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:9px 14px 9px 38px;
+  font-size:13.5px;color:var(--text);
+  outline:none;
+  transition:border-color var(--tr),box-shadow var(--tr);
+  height:40px;
+}
+.search-box input:focus{border-color:var(--em);box-shadow:0 0 0 2px rgba(34,197,94,.14)}
+.search-box input::placeholder{color:var(--text3)}
+.search-ico{
+  position:absolute;left:12px;top:50%;
+  transform:translateY(-50%);
+  font-size:15px;pointer-events:none;
+  line-height:1;
+}
+/* Right group */
+.tb-right{
+  display:flex;align-items:center;
+  gap:6px;
+  margin-left:auto;
+  flex-shrink:0;
+}
+.ico-btn{
+  width:40px;height:40px;min-width:40px;border-radius:9px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--text2);
+  transition:background var(--tr),color var(--tr);
+  position:relative;flex-shrink:0;
+}
+.ico-btn:hover{background:var(--card2);color:var(--text)}
+.notif-dot{
+  position:absolute;top:6px;right:6px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--danger);border:1.5px solid var(--bg2);
+}
+#tbSignup{
+  height:40px;padding:0 16px;
+  font-size:13.5px;font-weight:700;
+  border-radius:9px;
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* PAGE */
+.page{flex:1;padding:22px 20px 56px;max-width:1200px;width:100%;margin:0 auto}
+
+/* ── SIDEBAR INTERNALS ── */
+.logo{
+  padding:18px 16px 14px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.logo-icon{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(135deg,var(--em),var(--em2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.logo-name{font-weight:700;font-size:17px;letter-spacing:-.3px;white-space:nowrap}
+.logo-name em{color:var(--em);font-style:normal}
+.nav-group{padding:8px 0}
+.nav-label{
+  font-size:10px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--text3);padding:6px 16px 3px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 16px;
+  font-size:13.5px;color:var(--text2);
+  border-left:3px solid transparent;cursor:pointer;
+  transition:background var(--tr),color var(--tr),border-color var(--tr);
+  -webkit-tap-highlight-color:transparent;user-select:none;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--em-dim);color:var(--em3);border-left-color:var(--em)}
+.nav-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0}
+.nav-sep{height:1px;background:var(--border);margin:6px 0}
+.sidebar-foot{
+  margin-top:auto;flex-shrink:0;
+  padding:12px 16px;border-top:1px solid var(--border);
+}
+.user-pill{
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  padding:6px 8px;border-radius:var(--r);
+  transition:background var(--tr);
+}
+.user-pill:hover{background:var(--bg3)}
+.user-pill .uname{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-pill .urole{font-size:11px;color:var(--text3)}
+
+/* ── AVATARS / TAGS ── */
+.av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--em-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--em3);
+  flex-shrink:0;border:2px solid var(--border2);overflow:hidden;
+}
+.av.lg{width:52px;height:52px;font-size:20px}
+.av.xl{width:72px;height:72px;font-size:26px}
+.av img{width:100%;height:100%;object-fit:cover}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.tg{background:var(--em-dim);color:var(--em3);border:1px solid #1f5c30}
+.tb{background:#1e3a5f;color:#7dd3fc;border:1px solid #2a5580}
+.ta{background:#3d2b00;color:#fbbf24;border:1px solid #5a3e00}
+.tr{background:#3d1414;color:#fca5a5;border:1px solid #5c1f1f}
+.tp{background:#2d1e5c;color:#c4b5fd;border:1px solid #3f2a7a}
+.online-dot{
+  display:inline-block;width:8px;height:8px;
+  border-radius:50%;background:var(--em);
+  flex-shrink:0;box-shadow:0 0 0 2px var(--bg2);
+}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 18px;border-radius:var(--r);
+  font-size:13.5px;font-weight:600;
+  border:1px solid transparent;white-space:nowrap;
+  transition:background var(--tr),color var(--tr),border-color var(--tr),transform .1s;
+  -webkit-tap-highlight-color:transparent;cursor:pointer;
+}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--em);color:#071a0d;border-color:var(--em)}
+.btn-p:hover{background:var(--em3);border-color:var(--em3)}
+.btn-o{background:transparent;color:var(--text);border-color:var(--border2)}
+.btn-o:hover{background:var(--card);border-color:var(--em)}
+.btn-g{background:transparent;color:var(--text2);border-color:transparent}
+.btn-g:hover{background:var(--card);color:var(--text)}
+.btn-d{background:rgba(239,68,68,.12);color:var(--danger);border-color:rgba(239,68,68,.28)}
+.btn-d:hover{background:rgba(239,68,68,.2)}
+.btn-s{padding:5px 12px;font-size:12px}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.card-body{padding:18px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.a-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);overflow:hidden;cursor:pointer;
+  transition:border-color var(--tr),transform var(--tr);
+}
+.a-card:hover{border-color:var(--em);transform:translateY(-2px)}
+.a-thumb{
+  height:140px;
+  background:linear-gradient(135deg,#0d2a1a,#1e4d30);
+  display:flex;align-items:center;justify-content:center;
+  font-size:44px;position:relative;overflow:hidden;flex-shrink:0;
+}
+.a-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.a-meta{display:flex;align-items:center;gap:6px;padding:10px 13px 0;font-size:11px;color:var(--text3);flex-wrap:wrap}
+.a-body{padding:9px 13px 14px}
+.a-title{font-weight:700;font-size:13.5px;line-height:1.35;margin-bottom:5px;color:var(--text)}
+.a-sum{font-size:12px;color:var(--text3);line-height:1.5}
+
+/* ── MEMBER CARDS ── */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.m-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:16px;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:border-color var(--tr);
+}
+.m-card:hover{border-color:var(--em)}
+.m-info{flex:1;min-width:0}
+.m-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-bio{font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.m-stat{font-size:11.5px;color:var(--text3);margin-top:5px}
+.m-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+
+/* ── POST CARDS ── */
+.p-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px;margin-bottom:12px;
+  transition:border-color var(--tr);
+}
+.p-card:hover{border-color:var(--border2)}
+.p-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.p-head-meta{flex:1;min-width:0}
+.p-title{font-weight:700;font-size:14.5px;margin-bottom:7px;line-height:1.35}
+.p-body{font-size:13.5px;color:var(--text4);line-height:1.65;margin-bottom:12px}
+.p-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* ── LIKE BUTTON — works visually with JS toggle ── */
+.like-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 13px;border-radius:20px;
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:13px;color:var(--text3);
+  transition:all var(--tr);cursor:pointer;
+  user-select:none;-webkit-tap-highlight-color:transparent;
+  min-height:34px;
+}
+.like-btn:hover{background:rgba(239,68,68,.1);border-color:#ef4444;color:#ef4444}
+.like-btn.liked{background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444}
+.like-btn .heart{font-size:15px;line-height:1;transition:transform .15s}
+.like-btn.liked .heart{transform:scale(1.2)}
+/* comment panel */
+.comment-panel{
+  margin-top:14px;padding:14px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r2);
+}
+.comment-item{
+  display:flex;gap:9px;padding:9px 0;
+  border-bottom:1px solid var(--border);
+}
+.comment-item:last-child{border-bottom:none}
+.comment-body{flex:1;min-width:0}
+.comment-author{font-weight:600;font-size:12.5px}
+.comment-text{font-size:13px;color:var(--text4);margin-top:2px;line-height:1.55;word-break:break-word}
+.comment-time{font-size:11px;color:var(--text3);margin-top:3px}
+.comment-input-row{display:flex;gap:8px;margin-top:12px;align-items:flex-end}
+.comment-input-row textarea{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:8px 11px;
+  font:inherit;font-size:13px;color:var(--text);
+  resize:none;outline:none;min-height:64px;
+  transition:border-color var(--tr);
+}
+.comment-input-row textarea:focus{border-color:var(--em)}
+
+/* ── SERVER CARDS ── */
+.s-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px;margin-bottom:12px;
+  display:flex;align-items:flex-start;gap:14px;
+  transition:border-color var(--tr);
+}
+.s-card:hover{border-color:var(--border2)}
+.s-icon{
+  width:52px;height:52px;border-radius:10px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+}
+.s-icon img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.s-info{flex:1;min-width:0}
+.s-name{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.s-desc{font-size:12.5px;color:var(--text3);margin-bottom:10px;line-height:1.5}
+.s-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.s-ip{font-size:11.5px;color:var(--text3);font-family:monospace;background:var(--bg3);padding:4px 10px;border-radius:6px;border:1px solid var(--border);display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.copy-wrap{position:relative}
+.copy-tip{position:absolute;bottom:calc(100% + 4px);right:0;background:var(--em);color:#071a0d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
+.copy-tip.show{opacity:1}
+
+/* ── HOME NAV CARDS ── */
+.nc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+.nc{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r2);padding:18px 14px;cursor:pointer;
+  transition:border-color var(--tr),background var(--tr),transform var(--tr);
+  text-align:center;
+}
+.nc:hover{border-color:var(--em);background:var(--card2);transform:translateY(-2px)}
+.nc-icon{font-size:26px;margin-bottom:9px}
+.nc-title{font-weight:700;font-size:13px;margin-bottom:4px;color:var(--text)}
+.nc-desc{font-size:11.5px;color:var(--text3);line-height:1.45}
+
+/* ── SECTION HELPERS ── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+.sec-head h2{font-size:1.05rem;font-weight:700;color:var(--text)}
+.sec-head h2 em{color:var(--em);font-style:normal}
+.divider{height:1px;background:var(--border);margin:24px 0}
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.flt{padding:5px 13px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);font-size:12.5px;color:var(--text3);cursor:pointer;transition:all var(--tr)}
+.flt:hover,.flt.on{background:var(--em-dim);color:var(--em3);border-color:var(--em)}
+.tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--r);padding:4px;max-width:100%;overflow-x:auto;margin-bottom:18px}
+.tab{padding:5px 13px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--text3);cursor:pointer;transition:all var(--tr);white-space:nowrap}
+.tab.on{background:var(--card2);color:var(--em3);border:1px solid var(--border2)}
+.tab:hover:not(.on){color:var(--text)}
+.empty{text-align:center;padding:52px 20px;color:var(--text3)}
+.empty-ico{font-size:46px;margin-bottom:14px;opacity:.5}
+.empty h3{font-size:16px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13.5px;line-height:1.6;max-width:280px;margin:0 auto 18px}
+.warn-banner{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.22);border-radius:var(--r);padding:11px 14px;font-size:12.5px;color:#fbbf24;line-height:1.6;margin-bottom:16px}
+.info-banner{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);border-radius:var(--r);padding:11px 14px;font-size:12.5px;color:var(--em3);line-height:1.6;margin-bottom:16px}
+.stat-row{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px}
+.stat{text-align:center}
+.stat-n{font-size:18px;font-weight:700;color:var(--em3)}
+.stat-l{font-size:11px;color:var(--text3)}
+
+/* ── HERO ── */
+.hero{
+  border-radius:var(--r2);overflow:hidden;position:relative;min-height:230px;
+  background:linear-gradient(135deg,#0a2016 0%,#163a20 55%,#0d1a12 100%);
+  border:1px solid var(--border2);
+  display:flex;align-items:flex-end;padding:28px;margin-bottom:28px;
+}
+.hero-bg{position:absolute;inset:0;background-image:var(--hero-bg-img,none);background-size:cover;background-position:center;opacity:.25}
+.hero-content{position:relative;z-index:1;max-width:62%}
+.hero-pill{display:inline-flex;align-items:center;gap:5px;background:var(--em-dim);color:var(--em3);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;border:1px solid var(--em)}
+.hero h1{font-size:clamp(1.2rem,3vw,1.7rem);font-weight:700;line-height:1.25;margin-bottom:8px}
+.hero p{color:var(--text2);font-size:13.5px;margin-bottom:16px;line-height:1.55}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.hero-deco{position:absolute;right:24px;bottom:20px;font-size:clamp(32px,6vw,54px);opacity:.22;line-height:1;pointer-events:none;text-align:right}
+
+/* ── MODALS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);width:100%;max-width:450px;max-height:90vh;overflow-y:auto;padding:26px;position:relative;transform:translateY(10px);transition:transform .22s}
+.overlay.open .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:13px;right:13px;width:30px;height:30px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text3);transition:background var(--tr),color var(--tr)}
+.modal-close:hover{color:var(--text);border-color:var(--border2);background:var(--card)}
+.modal h2{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.modal .sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.fg{margin-bottom:14px}
+.fg label{font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 12px;font-size:13.5px;color:var(--text);outline:none;transition:border-color var(--tr)}
+.fg input:focus,.fg textarea:focus{border-color:var(--em);box-shadow:0 0 0 2px rgba(34,197,94,.1)}
+.fg textarea{resize:vertical;min-height:80px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--danger);font-size:12px;margin-top:5px;display:none}
+.suc{background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.28);color:var(--em3);border-radius:var(--r);padding:10px 14px;font-size:13px;display:none;margin-top:10px}
+.modal-foot{text-align:center;margin-top:14px;font-size:12.5px;color:var(--text3)}
+.modal-foot a{color:var(--em);cursor:pointer}
+
+/* ── LOADING SPINNER ── */
+.spin{
+  display:inline-block;width:16px;height:16px;
+  border:2px solid rgba(34,197,94,.3);
+  border-top-color:var(--em);border-radius:50%;
+  animation:spin .7s linear infinite;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#sessionLoader{
+  position:fixed;inset:0;background:var(--bg);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  font-size:14px;color:var(--text3);
+}
+#sessionLoader.hidden{display:none}
+#sessionLoader .big-spin{
+  width:40px;height:40px;
+  border:3px solid rgba(34,197,94,.2);
+  border-top-color:var(--em);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:22px;right:20px;z-index:300;
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:var(--r2);padding:11px 16px;
+  display:flex;align-items:center;gap:9px;
+  font-size:13.5px;max-width:min(320px,92vw);
+  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  transform:translateY(16px);opacity:0;
+  transition:all .28s ease;pointer-events:none;
+}
+#toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+
+/* ── BACKDROP ── */
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39}
+.backdrop.open{display:block}
+
+/* ── SEARCH (section-level) ── */
+.search-field{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.search-field input{flex:1;min-width:180px;max-width:340px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;font-size:13px;color:var(--text);outline:none;transition:border-color var(--tr)}
+.search-field input:focus{border-color:var(--em)}
+.search-field select{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 10px;font-size:13px;color:var(--text);outline:none;min-width:120px}
+
+/* ── RULES ── */
+.rule-block{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:12px}
+.rule-block h3{font-size:15px;font-weight:700;color:var(--em3);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rule-block li{font-size:13.5px;color:var(--text4);line-height:1.75;padding-left:16px;position:relative}
+.rule-block li::before{content:'·';position:absolute;left:4px;color:var(--em)}
+
+/* ── FOOTER ── */
+.site-footer{margin-top:32px;padding:20px 0 8px;border-top:1px solid var(--border);text-align:center}
+.footer-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.footer-links a{color:var(--em);transition:color var(--tr)}
+.footer-links a:hover{color:var(--em3)}
+.footer-copy{font-size:11.5px;color:var(--text3);line-height:1.6}
+
+/* ═══════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════ */
+@media(min-width:1280px){
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .nc-grid{grid-template-columns:repeat(5,1fr)}
+  .page{padding:28px 32px 64px}
+}
+@media(max-width:1279px){
+  :root{--sidebar-w:210px}
+  .nc-grid{grid-template-columns:repeat(5,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:1023px){
+  :root{--sidebar-w:190px}
+  .nc-grid{grid-template-columns:repeat(3,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .page{padding:20px 18px 56px}
+}
+/* ── Tablet 600–768px ── */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);box-shadow:4px 0 24px rgba(0,0,0,.5)}
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:flex}
+  .main{width:100%}
+  .nc-grid{grid-template-columns:repeat(3,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .hero{min-height:200px;padding:20px}
+  .hero-content{max-width:80%}
+  .hero-deco{font-size:32px;right:14px;bottom:14px}
+  .s-card{flex-direction:column}
+  .s-actions{flex-direction:row;align-items:center}
+  .page{padding:16px 14px 56px}
+  .fr{grid-template-columns:1fr}
+}
+/* ── Mobile 430px ── */
+@media(max-width:480px){
+  /* Topbar: collapse to essential elements */
+  .topbar{padding:0 10px;gap:7px;height:54px}
+  .search-box{flex:1;min-width:0}
+  .search-box input{font-size:13px;padding:8px 12px 8px 34px;height:38px}
+  /* Hide settings on very small, keep notif & signup */
+  .ico-btn.settings-btn{display:none}
+  .nc-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .a-card{display:flex;flex-direction:row;align-items:stretch}
+  .a-thumb{width:88px;min-width:88px;height:auto;flex-shrink:0;border-radius:0}
+  .hero h1{font-size:1.15rem}
+  .page{padding:14px 12px 56px}
+  #tbSignup{padding:0 12px;font-size:12.5px}
+}
+/* ── 390px ── */
+@media(max-width:390px){
+  .topbar{gap:6px;padding:0 8px}
+  .menu-btn{width:36px;height:36px;min-width:36px}
+  .ico-btn{width:36px;height:36px;min-width:36px;font-size:16px}
+  #tbSignup{padding:0 10px;font-size:12px;height:36px}
+  .search-box input{height:36px;font-size:12.5px}
+}
+/* ── 360px ── */
+@media(max-width:360px){
+  :root{--sidebar-w:85vw}
+  .topbar{gap:5px;padding:0 7px}
+  .nc-grid{grid-template-columns:1fr 1fr}
+  .nc{padding:12px 8px}
+  .hero{padding:14px}
+  .hero-content{max-width:100%}
+  .hero-deco{display:none}
+  /* On 360 hide notif dot, keep icon */
+  .notif-dot{width:6px;height:6px}
+}
+/* ── 320px ── */
+@media(max-width:320px){
+  .topbar{gap:4px;padding:0 6px}
+  .ico-btn.notif-btn{display:none}
+  #tbSignup{display:none}
+  /* Search full width since signup hidden */
+  .search-box{flex:1}
+}
+@media(hover:none){
+  .nav-item{padding:11px 16px}
+  .btn{min-height:44px}
+  .btn-s{min-height:36px}
+  .like-btn{min-height:38px}
+  .flt{padding:7px 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- SESSION LOADING SCREEN -->
+<div id="sessionLoader">
+  <div class="big-spin"></div>
+  <span>Restoring session…</span>
+</div>
+
+<!-- ═══════════════ APP SHELL ═══════════════ -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">⛏️</div>
+      <div class="logo-name">Amine<em>Hub</em></div>
+    </div>
+    <nav class="nav-group">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" id="ni-home"    onclick="go('home')"      role="menuitem" tabindex="0"><span class="nav-icon">🏠</span>Home</div>
+      <div class="nav-item"        id="ni-info"    onclick="go('info')"      role="menuitem" tabindex="0"><span class="nav-icon">📰</span>Information</div>
+      <div class="nav-item"        id="ni-members" onclick="go('members')"   role="menuitem" tabindex="0"><span class="nav-icon">👥</span>Members</div>
+      <div class="nav-item"        id="ni-comm"    onclick="go('community')" role="menuitem" tabindex="0"><span class="nav-icon">💬</span>Community</div>
+      <div class="nav-item"        id="ni-servers" onclick="go('servers')"   role="menuitem" tabindex="0"><span class="nav-icon">🌐</span>Servers</div>
+      <div class="nav-item"        id="ni-rules"   onclick="go('rules')"     role="menuitem" tabindex="0"><span class="nav-icon">📜</span>Rules</div>
+    </nav>
+    <div class="nav-sep"></div>
+    <nav class="nav-group">
+      <div class="nav-label">Account</div>
+      <div class="nav-item" id="ni-login"  onclick="openM('login')"  role="menuitem" tabindex="0"><span class="nav-icon">🔐</span>Sign In</div>
+      <div class="nav-item" id="ni-signup" onclick="openM('signup')" role="menuitem" tabindex="0"><span class="nav-icon">✨</span>Sign Up</div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="user-pill" id="userPill" role="button" aria-label="Account">
+        <div class="av" id="sideAv">?</div>
+        <div style="min-width:0">
+          <div class="uname" id="sideName">Guest</div>
+          <div class="urole" id="sideRole">Not signed in</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR — fixed responsive layout -->
+    <header class="topbar" role="banner">
+      <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" aria-label="Open menu" aria-expanded="false">☰</button>
+      <div class="search-box" role="search">
+        <span class="search-ico" aria-hidden="true">🔍</span>
+        <input type="search" id="gSearch" placeholder="Search AmineHub…" aria-label="Search" onkeydown="globalSearch(event)">
+      </div>
+      <div class="tb-right">
+        <button class="ico-btn notif-btn" title="Notifications" onclick="toast('No new notifications','ℹ️')" aria-label="Notifications">
+          🔔<span class="notif-dot"></span>
+        </button>
+        <button class="ico-btn settings-btn" title="Settings" onclick="showSettings()" aria-label="Settings">⚙️</button>
+        <button class="btn btn-p" id="tbSignup" onclick="openM('signup')">Sign Up</button>
+      </div>
+    </header>
+    <main class="page" id="page" role="main"></main>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- LOGIN -->
+<div class="overlay" id="loginM" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('login')" aria-label="Close">✕</button>
+    <h2 id="loginTitle">Welcome back</h2>
+    <p class="sub">Sign in to your AmineHub account</p>
+    <div class="fg"><label for="liU">Email or username</label><input id="liU" type="text" placeholder="steve@example.com" autocomplete="username"></div>
+    <div class="fg">
+      <label for="liP">Password</label>
+      <input id="liP" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="err" id="liErr"></div>
+    </div>
+    <button class="btn btn-p btn-full" id="liBtn" onclick="doLogin()">Sign In</button>
+    <div class="suc" id="liSuc">Signed in successfully!</div>
+    <div class="modal-foot">No account? <a onclick="closeM('login');openM('signup')">Sign up</a> &nbsp;·&nbsp; <a onclick="closeM('login');openM('forgot')">Forgot password</a></div>
+  </div>
+</div>
+
+<!-- SIGNUP -->
+<div class="overlay" id="signupM" role="dialog" aria-modal="true" aria-labelledby="signupTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('signup')" aria-label="Close">✕</button>
+    <h2 id="signupTitle">Create your account</h2>
+    <p class="sub">Join thousands of Minecraft players on AmineHub</p>
+    <div class="fr">
+      <div class="fg"><label for="suU">Username</label><input id="suU" type="text" placeholder="Steve123" autocomplete="username"></div>
+      <div class="fg"><label for="suE">Email</label><input id="suE" type="email" placeholder="you@example.com" autocomplete="email"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label for="suP">Password</label><input id="suP" type="password" placeholder="Min. 8 characters" autocomplete="new-password"></div>
+      <div class="fg"><label for="suP2">Confirm</label><input id="suP2" type="password" placeholder="Repeat" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSignup()"></div>
+    </div>
+    <div class="fg">
+      <label for="suBio">Bio <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+      <input id="suBio" type="text" placeholder="Tell the community about yourself…">
+    </div>
+    <div class="fg">
+      <label for="suEd">Favourite Edition</label>
+      <select id="suEd"><option value="Java">Java</option><option value="Bedrock">Bedrock</option><option value="Both">Both</option></select>
+    </div>
+    <div class="err" id="suErr" style="display:none;margin-bottom:8px"></div>
+    <button class="btn btn-p btn-full" id="suBtn" onclick="doSignup()">Create Account</button>
+    <div class="suc" id="suSuc">Account created! Welcome to AmineHub 🎉</div>
+    <div class="modal-foot">By signing up you agree to our <a onclick="closeM('signup');go('rules')">Community Rules</a></div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD -->
+<div class="overlay" id="forgotM" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeM('forgot')" aria-label="Close">✕</button>
+    <h2 id="forgotTitle">Reset your password</h2>
+    <p class="sub">Enter your email — we'll send a reset link.</p>
+    <div class="fg"><label for="fpE">Email address</label><input id="fpE" type="email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doForgot()"></div>
+    <button class="btn btn-p btn-full" onclick="doForgot()">Send Reset Link</button>
+    <div class="suc" id="fpSuc">If that email exists, a link has been sent.</div>
+  </div>
+</div>
+
+<!-- NEW POST -->
+<div class="overlay" id="postM" role="dialog" aria-modal="true" aria-labelledby="postTitle">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" onclick="closeM('post')" aria-label="Close">✕</button>
+    <h2 id="postTitle">New Community Post</h2>
+    <p class="sub">Share something with AmineHub</p>
+    <div class="fg"><label for="pCat">Category</label>
+      <select id="pCat"><option>General</option><option>Builds</option><option>Survival</option><option>Redstone</option><option>Screenshots</option><option>Question</option></select>
+    </div>
+    <div class="fg"><label for="pTit">Title</label><input id="pTit" type="text" placeholder="What's on your mind?"></div>
+    <div class="fg"><label for="pBod">Content</label><textarea id="pBod" rows="4" placeholder="Share your story, build, question or tip…"></textarea></div>
+    <div class="err" id="pErr" style="display:none">Title and content are required.</div>
+    <button class="btn btn-p btn-full" id="pBtn" onclick="submitPost()">Publish Post</button>
+  </div>
+</div>
+
+<!-- SUGGEST SERVER -->
+<div class="overlay" id="srvM" role="dialog" aria-modal="true" aria-labelledby="srvTitle">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" onclick="closeM('srv')" aria-label="Close">✕</button>
+    <h2 id="srvTitle">Suggest a Server</h2>
+    <p class="sub">Reviewed before appearing publicly.</p>
+    <div class="fr">
+      <div class="fg"><label for="svN">Server Name</label><input id="svN" type="text" placeholder="My Awesome SMP"></div>
+      <div class="fg"><label for="svEd">Edition</label><select id="svEd"><option>Java</option><option>Bedrock</option><option>Both</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label for="svIp">Server IP</label><input id="svIp" type="text" placeholder="play.myserver.net"></div>
+      <div class="fg"><label for="svPt">Port (optional)</label><input id="svPt" type="number" placeholder="25565"></div>
+    </div>
+    <div class="fg"><label for="svDs">Description</label><textarea id="svDs" rows="3" placeholder="What makes your server unique?"></textarea></div>
+    <div class="err" id="svErr" style="display:none">Name, IP and description are required.</div>
+    <button class="btn btn-p btn-full" onclick="submitServer()">Submit for Review</button>
+  </div>
+</div>
+
+<!-- EDIT PROFILE -->
+<div class="overlay" id="editProfileM" role="dialog" aria-modal="true" aria-labelledby="editProfileTitle">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="closeM('editProfile')" aria-label="Close">✕</button>
+    <h2 id="editProfileTitle">✏️ Edit Profile</h2>
+    <p class="sub">Only you can edit your own profile.</p>
+    <div class="fg"><label for="epBio">Bio</label><input id="epBio" type="text" placeholder="Tell the community about yourself…"></div>
+    <div class="fg"><label for="epEd">Favourite Edition</label><select id="epEd"><option value="Java">Java</option><option value="Bedrock">Bedrock</option><option value="Both">Both</option></select></div>
+    <div class="err" id="epErr" style="display:none"></div>
+    <button class="btn btn-p btn-full" onclick="saveProfile()">Save Changes</button>
+    <div class="suc" id="epSuc">Profile updated!</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="alert" aria-live="polite"><span id="toastIco">✅</span><span id="toastMsg">Done!</span></div>
+
+<!-- ═══════════════ SCRIPT ═══════════════ -->
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════
+   GITHUB PAGES ASSET PATH RESOLVER
+   Drop images in the repo root alongside
+   index.html. getImg('filename.jpg') returns
+   the correct URL on both localhost and
+   GitHub Pages (user.github.io/repo/).
+════════════════════════════════════════════ */
+const BASE = (() => {
+  const {hostname, pathname} = window.location;
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') return './';
+  const parts = pathname.split('/').filter(Boolean);
+  return parts.length > 0 ? '/' + parts[0] + '/' : '/';
+})();
+
+function getImg(f) {
+  if (!f) return null;
+  if (/^(https?:|data:)/.test(f)) return f;
+  return BASE + f;
+}
+function imgTag(f, alt, s='') {
+  if (!f) return '';
+  return `<img src="${getImg(f)}" alt="${esc(alt)}" loading="lazy" onerror="this.style.display='none'"${s?` style="${s}"`:''}>`;
+}
+
+/* ════════════════════════════════════════════
+   XSS PREVENTION — escape all user content
+════════════════════════════════════════════ */
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+/* ════════════════════════════════════════════
+   SITE CONFIG
+════════════════════════════════════════════ */
+const SITE = {
+  name: 'AmineHub',
+  tagline: 'Your Minecraft Universe',
+  heroBg: '',   // e.g. 'hero.jpg' — drop file in repo root
+  logoImg: '',  // e.g. 'logo.png'
+};
+
+/* ════════════════════════════════════════════
+   STATIC CONTENT (articles, servers)
+   These are editorial — not user-generated
+════════════════════════════════════════════ */
+const ARTICLES = [
+  {id:1,title:"Java Edition 1.21.4 — What's New",cat:'Update',tag:'tg',emoji:'🌿',date:'Oct 15 2026',sum:'The latest Java snapshot introduces the Pale Garden biome, Creaking mob, and new wood type. Everything you need to know.',type:'Official',src:'minecraft.net',img:''},
+  {id:2,title:'Top 10 Survival Tips for New Players',cat:'Guide',tag:'tb',emoji:'⚔️',date:'Oct 12 2026',sum:'Starting out in Minecraft can feel overwhelming. These ten tips will help you thrive from your first night to the End.',type:'Editorial',src:'AmineHub',img:''},
+  {id:3,title:'Best Mods for 2026 — Community Picks',cat:'Mods',tag:'ta',emoji:'🔧',date:'Oct 10 2026',sum:'From Create to Iris shaders, the community voted on their favourite mods this year. Are your picks on the list?',type:'Community',src:'AmineHub',img:''},
+  {id:4,title:'Building the Ultimate Underwater Base',cat:'Builds',tag:'tp',emoji:'🌊',date:'Oct 8 2026',sum:'Step-by-step guide to constructing a massive underwater megabase — including conduit power and interior design tips.',type:'Guide',src:'AmineHub',img:''},
+  {id:5,title:'Redstone Farms That Print XP',cat:'Redstone',tag:'tr',emoji:'🔴',date:'Oct 5 2026',sum:'Fully automatic XP farms that keep your enchanting table maxed and supply repairs indefinitely.',type:'Community',src:'AmineHub',img:''},
+  {id:6,title:'Texture Pack Showdown: Faithful vs PureBDCraft',cat:'Resource Packs',tag:'tp',emoji:'🎨',date:'Oct 3 2026',sum:'Side-by-side comparison of two community favourites — which pack transforms your world without killing performance?',type:'Editorial',src:'AmineHub',img:''},
+];
+
+const DEMO_SERVERS = [
+  {id:1,name:'HyperMC SMP',icon:'⚔️',img:'',desc:'Semi-vanilla survival with land claiming, shops, and weekly events. Welcoming for all skill levels.',edition:'Java',ver:'1.21.x',ip:'play.hypermc.net',port:'25565',region:'EU',cat:'SMP',verified:true},
+  {id:2,name:'BlockCity Skyblock',icon:'🌤️',img:'',desc:'Custom skyblock with 50+ challenges, prestige system, and dedicated PvP arenas.',edition:'Java',ver:'1.20 – 1.21',ip:'skyblock.blockcity.gg',port:'',region:'NA',cat:'Skyblock',verified:true},
+  {id:3,name:'BedrockRealms+',icon:'🪨',img:'',desc:'Bedrock-compatible cross-platform survival. One of the largest Bedrock communities.',edition:'Bedrock',ver:'1.21.x',ip:'bedrock.realmsplus.net',port:'19132',region:'Global',cat:'Survival',verified:false},
+  {id:4,name:'PvP Arena Pro',icon:'🏹',img:'',desc:'Competitive PvP with ranked seasons, 1v1 ladder, and team tournaments every weekend.',edition:'Java',ver:'1.8 – 1.21',ip:'pvp.arenacraft.org',port:'25565',region:'NA',cat:'PvP',verified:true},
+];
+
+/* ════════════════════════════════════════════
+   PERSISTENT DATA STORAGE
+   All user data lives in localStorage under
+   namespaced keys so it survives page refresh.
+
+   KEY DESIGN:
+   ah_session  → {userId, username, email, bio, edition, badges, joined, posts}
+   ah_users    → array of public profile objects (no passwords)
+   ah_posts    → array of community posts
+   ah_likes    → {postId: [userId, ...]} map
+   ah_comments → {postId: [{id,uid,author,text,time},...]} map
+   ah_creds    → {email: hashedPwd} — credentials only, never mixed with profiles
+
+   NOTE: localStorage is per-device. For a real
+   shared community you need Supabase (see README
+   at the bottom of this file). This implementation
+   gives full persistence per device and a clear
+   migration path.
+════════════════════════════════════════════ */
+const LS = {
+  get(k){ try{ const v=localStorage.getItem('ah_'+k); return v?JSON.parse(v):null; }catch{return null;} },
+  set(k,v){ try{ localStorage.setItem('ah_'+k,JSON.stringify(v)); }catch(e){ console.warn('Storage full',e); } },
+  del(k){ try{ localStorage.removeItem('ah_'+k); }catch{} },
+};
+
+/* ── minimal hash (not cryptographic — for demo; use Supabase Auth for real security) ── */
+async function hashPwd(pwd) {
+  const enc = new TextEncoder().encode('ah_salt_2024_' + pwd);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ════════════════════════════════════════════
+   AUTH — Persistent session with localStorage
+════════════════════════════════════════════ */
+let CU = null; // current user profile object
+
+/* Restore session on page load */
+function restoreSession() {
+  const saved = LS.get('session');
+  if (saved && saved.userId) {
+    const users = LS.get('users') || [];
+    const found = users.find(u => u.userId === saved.userId);
+    if (found) {
+      CU = found;
+    } else {
+      // Session userId not found in user list — clear stale session
+      LS.del('session');
+    }
+  }
+}
+
+async function doLogin() {
+  const u = _v('liU').trim(), p = _v('liP');
+  _hide('liErr'); _hide('liSuc');
+  if (!u || !p) { _showEl('liErr','Please fill in all fields.'); return; }
+  setBtnLoading('liBtn', true);
+  try {
+    const creds = LS.get('creds') || {};
+    const users = LS.get('users') || [];
+    // find user by username OR email
+    const profile = users.find(x => x.username.toLowerCase()===u.toLowerCase() || x.email.toLowerCase()===u.toLowerCase());
+    if (!profile) { _showEl('liErr','No account found with that username or email.'); return; }
+    const hashed = await hashPwd(p);
+    if (creds[profile.userId] !== hashed) { _showEl('liErr','Incorrect password. Try again.'); return; }
+    CU = profile;
+    LS.set('session', {userId: profile.userId});
+    _showEl('liSuc', null, true);
+    setTimeout(() => { closeM('login'); refreshAuth(); go('home'); }, 700);
+  } finally {
+    setBtnLoading('liBtn', false);
+  }
+}
+
+async function doSignup() {
+  const u=_v('suU').trim(), e=_v('suE').trim().toLowerCase(),
+        p=_v('suP'), p2=_v('suP2'),
+        bio=_v('suBio').trim(), ed=_v('suEd');
+  _hide('suErr'); _hide('suSuc');
+  // Validation
+  if (!u||!e||!p||!p2) { _showEl('suErr','Please fill in all required fields.'); return; }
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(u)) { _showEl('suErr','Username: 3–20 chars, letters/numbers/underscores only.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { _showEl('suErr','Enter a valid email address.'); return; }
+  if (p.length < 8) { _showEl('suErr','Password must be at least 8 characters.'); return; }
+  if (p !== p2) { _showEl('suErr','Passwords do not match.'); return; }
+  setBtnLoading('suBtn', true);
+  try {
+    const users = LS.get('users') || [];
+    if (users.find(x=>x.username.toLowerCase()===u.toLowerCase())) { _showEl('suErr','That username is already taken.'); return; }
+    if (users.find(x=>x.email===e)) { _showEl('suErr','An account with that email already exists.'); return; }
+    const hashed = await hashPwd(p);
+    const userId = 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+    const joined = new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    // Profile (public — no password)
+    const profile = {userId, username:u, email:e, bio:bio||'', edition:ed||'Java', badges:['🌱 New'], posts:0, joined, img:''};
+    // Save credentials separately
+    const creds = LS.get('creds') || {};
+    creds[userId] = hashed;
+    LS.set('creds', creds);
+    // Save profile
+    users.push(profile);
+    LS.set('users', users);
+    // Auto-login
+    CU = profile;
+    LS.set('session', {userId});
+    _showEl('suSuc', null, true);
+    setTimeout(() => { closeM('signup'); refreshAuth(); go('members'); }, 900);
+  } finally {
+    setBtnLoading('suBtn', false);
+  }
+}
+
+function doForgot() {
+  const e = _v('fpE').trim();
+  if (!e) { toast('Enter your email first','⚠️'); return; }
+  // In production: call backend password-reset API here
+  _showEl('fpSuc', null, true);
+  setTimeout(() => closeM('forgot'), 2500);
+}
+
+function doLogout() {
+  CU = null;
+  LS.del('session');
+  refreshAuth();
+  go('home');
+  toast('Signed out successfully','👋');
+}
+
+function saveProfile() {
+  if (!CU) return;
+  const bio = _v('epBio').trim();
+  const ed  = _v('epEd');
+  _hide('epErr'); _hide('epSuc');
+  const users = LS.get('users') || [];
+  const idx = users.findIndex(u => u.userId === CU.userId);
+  if (idx === -1) { _showEl('epErr','Profile not found — please sign out and back in.'); return; }
+  users[idx].bio = bio;
+  users[idx].edition = ed;
+  LS.set('users', users);
+  CU = users[idx];
+  LS.set('session', {userId: CU.userId});
+  _showEl('epSuc', null, true);
+  refreshAuth();
+  setTimeout(() => closeM('editProfile'), 1200);
+}
+
+/* ════════════════════════════════════════════
+   POSTS — persistent
+════════════════════════════════════════════ */
+function getPosts() {
+  return LS.get('posts') || [
+    {id:'demo1',author:'CreeperSlayer99',uid:'demo',cat:'Builds',title:'My 1-year survival world — full tour inside!',body:'After 365 days I\'ve finally finished my mega-castle. It took 80,000 stone bricks, 12,000 wood planks, and way too many late nights. Every room has a purpose — including the hidden vault.',likes:34,time:'2h ago'},
+    {id:'demo2',author:'DiamondQueen_',uid:'demo2',cat:'Question',title:'Best Y level for diamonds in 1.21?',body:'I keep getting different answers — is Y -58 still the sweet spot for diamond mining in the latest version? Drop your tested coordinates below!',likes:21,time:'5h ago'},
+    {id:'demo3',author:'NetherWalker',uid:'demo3',cat:'Survival',title:'Nether fortress speedrun strats — no cheats',body:'Found a route that gets you blaze rods and nether warts in under 4 minutes from world spawn. The key is setting your spawn immediately and heading straight east in the Nether.',likes:45,time:'1d ago'},
+    {id:'demo4',author:'PixelPanda42',uid:'demo4',cat:'Builds',title:'2500-block pixel art of a Creeper — WIP',body:'Working on the largest pixel art piece I\'ve ever attempted. Currently 60% complete. The shading with different green wools has been a challenge but it\'s coming together!',likes:89,time:'2d ago'},
+  ];
+}
+function savePosts(posts) { LS.set('posts', posts); }
+
+/* ════════════════════════════════════════════
+   LIKES — persistent, one per user per post
+════════════════════════════════════════════ */
+function getLikes() { return LS.get('likes') || {}; }
+function saveLikes(l) { LS.set('likes', l); }
+
+function hasLiked(postId) {
+  if (!CU) return false;
+  const l = getLikes();
+  return Array.isArray(l[postId]) && l[postId].includes(CU.userId);
+}
+function getLikeCount(postId) {
+  const l = getLikes();
+  return Array.isArray(l[postId]) ? l[postId].length : null; // null = use post default
+}
+
+function toggleLike(postId) {
+  if (!CU) { toast('Sign in to like posts','🔒'); openM('login'); return; }
+  const l = getLikes();
+  if (!Array.isArray(l[postId])) l[postId] = [];
+  const idx = l[postId].indexOf(CU.userId);
+  const wasLiked = idx !== -1;
+  if (wasLiked) l[postId].splice(idx, 1);
+  else l[postId].push(CU.userId);
+  saveLikes(l);
+  // Update the button & count in the DOM immediately (no full re-render)
+  const btn = document.getElementById('lb'+postId);
+  const cnt = document.getElementById('lc'+postId);
+  if (btn) {
+    btn.classList.toggle('liked', !wasLiked);
+    btn.setAttribute('aria-pressed', (!wasLiked).toString());
+  }
+  if (cnt) {
+    // Count: use stored likes array length for user-created posts,
+    // add delta to demo post's seed count
+    const posts = getPosts();
+    const post = posts.find(p=>p.id===postId);
+    const stored = l[postId].length;
+    // For demo posts the base likes are baked in; for real posts use stored count
+    if (post) {
+      // If this is a demo post (uid starts with 'demo'), offset from seed
+      cnt.textContent = post.uid && post.uid.startsWith('demo') ?
+        post.likes + (wasLiked ? -1 : 1) :
+        stored;
+      // Patch demo post likes count so toggling stays consistent
+      if (post.uid && post.uid.startsWith('demo')) {
+        post.likes += wasLiked ? -1 : 1;
+        savePosts(posts);
+      }
+    } else { cnt.textContent = stored; }
+  }
+}
+
+/* ════════════════════════════════════════════
+   COMMENTS — persistent, per post
+════════════════════════════════════════════ */
+function getComments() { return LS.get('comments') || {}; }
+function saveComments(c) { LS.set('comments', c); }
+
+function getPostComments(postId) {
+  return (getComments()[postId] || []);
+}
+
+function toggleComments(postId) {
+  const panel = document.getElementById('cp'+postId);
+  if (!panel) { openCommentPanel(postId); return; }
+  panel.style.display = panel.style.display === 'none' ? '' : 'none';
+}
+
+function openCommentPanel(postId) {
+  const card = document.getElementById('pc'+postId);
+  if (!card) return;
+  // Remove old panel if exists
+  let panel = document.getElementById('cp'+postId);
+  if (panel) panel.remove();
+  panel = document.createElement('div');
+  panel.id = 'cp'+postId;
+  panel.className = 'comment-panel';
+  panel.innerHTML = renderCommentPanel(postId);
+  card.appendChild(panel);
+}
+
+function renderCommentPanel(postId) {
+  const comments = getPostComments(postId);
+  const cHtml = comments.length
+    ? comments.map(c=>`
+      <div class="comment-item">
+        <div class="av" style="width:28px;height:28px;font-size:11px;flex-shrink:0">${esc(c.author[0].toUpperCase())}</div>
+        <div class="comment-body">
+          <div class="comment-author">${esc(c.author)}</div>
+          <div class="comment-text">${esc(c.text)}</div>
+          <div class="comment-time">${esc(c.time)}${CU&&CU.userId===c.uid?` · <a style="color:var(--danger);cursor:pointer;font-size:11px" onclick="delComment('${esc(postId)}','${esc(c.id)}')">Delete</a>`:''}</div>
+        </div>
+      </div>`).join('')
+    : '<div style="padding:12px 0;text-align:center;font-size:13px;color:var(--text3)">No comments yet. Be first!</div>';
+
+  const inputHtml = CU
+    ? `<div class="comment-input-row">
+        <textarea id="ci${postId}" placeholder="Write a comment…" maxlength="1000" rows="2"></textarea>
+        <button class="btn btn-p btn-s" style="align-self:flex-end;flex-shrink:0" onclick="submitComment('${esc(postId)}')">Post</button>
+       </div>`
+    : `<div style="margin-top:10px;text-align:center;font-size:13px;color:var(--text3)">
+        <a style="color:var(--em);cursor:pointer" onclick="openM('login')">Sign in</a> to comment.
+       </div>`;
+
+  return `
+    <div style="font-weight:600;font-size:13px;margin-bottom:10px;color:var(--text2)">💬 Comments (${comments.length})</div>
+    <div id="cl${postId}">${cHtml}</div>
+    ${inputHtml}`;
+}
+
+function submitComment(postId) {
+  if (!CU) { openM('login'); return; }
+  const ta = document.getElementById('ci'+postId);
+  if (!ta) return;
+  const text = ta.value.trim();
+  if (!text) { toast('Comment cannot be empty','⚠️'); return; }
+  if (text.length > 1000) { toast('Comment too long (max 1000 chars)','⚠️'); return; }
+  const all = getComments();
+  if (!all[postId]) all[postId] = [];
+  const newC = {
+    id: 'c_'+Date.now(),
+    uid: CU.userId,
+    author: CU.username,
+    text,
+    time: 'Just now',
+  };
+  all[postId].push(newC);
+  saveComments(all);
+  // Update panel in-place
+  const listEl = document.getElementById('cl'+postId);
+  if (listEl) listEl.innerHTML = all[postId].map(c=>`
+    <div class="comment-item">
+      <div class="av" style="width:28px;height:28px;font-size:11px;flex-shrink:0">${esc(c.author[0].toUpperCase())}</div>
+      <div class="comment-body">
+        <div class="comment-author">${esc(c.author)}</div>
+        <div class="comment-text">${esc(c.text)}</div>
+        <div class="comment-time">${esc(c.time)}${CU&&CU.userId===c.uid?` · <a style="color:var(--danger);cursor:pointer;font-size:11px" onclick="delComment('${esc(postId)}','${esc(c.id)}')">Delete</a>`:''}</div>
+      </div>
+    </div>`).join('');
+  ta.value = '';
+  // Update comment count button
+  const cntEl = document.getElementById('cc'+postId);
+  if (cntEl) cntEl.textContent = all[postId].length;
+  toast('Comment posted!','💬');
+}
+
+function delComment(postId, cid) {
+  if (!CU) return;
+  const all = getComments();
+  if (!all[postId]) return;
+  const c = all[postId].find(x=>x.id===cid);
+  if (!c || c.uid !== CU.userId) { toast('You can only delete your own comments','⚠️'); return; }
+  all[postId] = all[postId].filter(x=>x.id!==cid);
+  saveComments(all);
+  // Re-render panel
+  const panel = document.getElementById('cp'+postId);
+  if (panel) panel.innerHTML = renderCommentPanel(postId);
+  toast('Comment deleted','🗑️');
+}
+
+/* ════════════════════════════════════════════
+   MEMBERS — from localStorage (registered users)
+   Shows all real registered members + demo data
+   labelled clearly in development
+════════════════════════════════════════════ */
+function getAllMembers() {
+  // Real registered users from localStorage
+  const realUsers = (LS.get('users') || []).map(u => ({
+    ...u,
+    isReal: true,
+  }));
+  return realUsers;
+}
+
+/* ════════════════════════════════════════════
+   UI HELPERS
+════════════════════════════════════════════ */
+function _v(id) { const el=document.getElementById(id); return el ? el.value : ''; }
+function _hide(id) { const el=document.getElementById(id); if(el) el.style.display='none'; }
+function _showEl(id, txt, isSuccess) {
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.display='block';
+  if(txt!==null&&txt!==undefined) el.textContent=txt;
+}
+function setBtnLoading(id, loading) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.disabled = loading;
+  el.innerHTML = loading
+    ? '<span class="spin"></span> Please wait…'
+    : el.dataset.label || el.textContent;
+  if (!loading && !el.dataset.label) el.dataset.label = '';
+}
+function requireAuth(fn) {
+  if (CU) fn();
+  else { toast('Please sign in first','🔒'); openM('login'); }
+}
+
+/* ── Toast ── */
+let _tt;
+function toast(msg, ico='✅') {
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIco').textContent = ico;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ── Modals ── */
+function openM(id) {
+  const el = document.getElementById(id+'M');
+  if (el) el.classList.add('open');
+}
+function closeM(id) {
+  const el = document.getElementById(id+'M');
+  if (el) el.classList.remove('open');
+}
+document.querySelectorAll('.overlay').forEach(o =>
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+  if (e.target.classList.contains('nav-item') && (e.key==='Enter'||e.key===' ')) { e.preventDefault(); e.target.click(); }
+});
+
+/* ── Sidebar ── */
+function toggleSidebar() {
+  const s=document.getElementById('sidebar'), b=document.getElementById('backdrop');
+  const open = s.classList.toggle('open');
+  b.classList.toggle('open', open);
+  document.getElementById('menuBtn').setAttribute('aria-expanded', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('backdrop').classList.remove('open');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+}
+
+/* ── Settings ── */
+function showSettings() {
+  // For GitHub Pages static site, settings = rules/about page
+  toast('Settings: Manage your profile from the Members page','⚙️');
+  if (CU) {
+    document.getElementById('epBio').value = CU.bio || '';
+    document.getElementById('epEd').value = CU.edition || 'Java';
+    openM('editProfile');
+  } else {
+    openM('login');
+  }
+}
+
+/* ════════════════════════════════════════════
+   AUTH UI REFRESH
+════════════════════════════════════════════ */
+function refreshAuth() {
+  const loggedIn = !!CU;
+  const tbS = document.getElementById('tbSignup');
+  const niLogin = document.getElementById('ni-login');
+  const niSignup = document.getElementById('ni-signup');
+  const av = document.getElementById('sideAv');
+  const nm = document.getElementById('sideName');
+  const rl = document.getElementById('sideRole');
+  const pill = document.getElementById('userPill');
+
+  if (loggedIn) {
+    if (tbS) tbS.style.display = 'none';
+    if (niLogin) { niLogin.innerHTML = '<span class="nav-icon">🚪</span>Sign Out'; niLogin.onclick = doLogout; }
+    if (niSignup) niSignup.style.display = 'none';
+    if (av) av.textContent = CU.username[0].toUpperCase();
+    if (nm) nm.textContent = CU.username;
+    if (rl) rl.textContent = 'Member';
+    if (pill) pill.onclick = () => { document.getElementById('epBio').value=CU.bio||''; document.getElementById('epEd').value=CU.edition||'Java'; openM('editProfile'); };
+  } else {
+    if (tbS) tbS.style.display = '';
+    if (niLogin) { niLogin.innerHTML = '<span class="nav-icon">🔐</span>Sign In'; niLogin.onclick = () => openM('login'); }
+    if (niSignup) { niSignup.style.display = ''; niSignup.onclick = () => openM('signup'); }
+    if (av) av.textContent = '?';
+    if (nm) nm.textContent = 'Guest';
+    if (rl) rl.textContent = 'Not signed in';
+    if (pill) pill.onclick = () => openM('login');
+  }
+}
+
+/* ════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════ */
+let CUR = 'home';
+function go(page) {
+  CUR = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const ni = document.getElementById('ni-'+page) || document.getElementById('ni-'+{info:'info',members:'members',community:'comm',servers:'servers',rules:'rules',home:'home'}[page]);
+  if (ni) ni.classList.add('active');
+  const el = document.getElementById('page');
+  el.innerHTML = (PAGES[page] || PAGES.home)();
+  el.scrollTop = 0;
+  closeSidebar();
+  // Apply hero bg if set
+  if (page === 'home' && SITE.heroBg) {
+    const hb = document.getElementById('heroBgEl');
+    if (hb) hb.style.backgroundImage = `url('${getImg(SITE.heroBg)}')`;
+  }
+}
+
+function globalSearch(e) {
+  if (e.key !== 'Enter') return;
+  const q = document.getElementById('gSearch').value.trim().toLowerCase();
+  if (!q) return;
+  toast(`Searching for "${q}"…`,'🔍');
+  if (/server|ip|\.net|\.gg|play\./.test(q)) go('servers');
+  else if (/rule|ban|guide|policy/.test(q)) go('rules');
+  else if (/member|player|user/.test(q)) go('members');
+  else if (/post|build|surviv|communit/.test(q)) go('community');
+  else go('info');
+}
+
+/* ════════════════════════════════════════════
+   COPY IP
+════════════════════════════════════════════ */
+function copyIP(ip, sid) {
+  const show = () => {
+    toast('Server IP copied!','📋');
+    const tip = document.getElementById('ct'+sid);
+    if (tip) { tip.classList.add('show'); setTimeout(()=>tip.classList.remove('show'),2000); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ip).then(show).catch(() => toast('Copy: '+ip,'📋'));
+  } else { toast('Copy: '+ip,'📋'); }
+}
+
+/* ════════════════════════════════════════════
+   POST ACTIONS
+════════════════════════════════════════════ */
+function submitPost() {
+  if (!CU) { closeM('post'); openM('login'); return; }
+  const cat=_v('pCat'), tit=_v('pTit').trim(), bod=_v('pBod').trim();
+  if (!tit||!bod) { _showEl('pErr', 'Title and content are required.'); document.getElementById('pErr').style.display='block'; return; }
+  document.getElementById('pErr').style.display='none';
+  const posts = getPosts();
+  const newPost = {
+    id: 'p_'+Date.now(),
+    author: CU.username,
+    uid: CU.userId,
+    cat, title:tit, body:bod,
+    likes: 0,
+    time: 'Just now',
+  };
+  posts.unshift(newPost);
+  savePosts(posts);
+  // Update author's post count
+  const users = LS.get('users') || [];
+  const ui = users.findIndex(u=>u.userId===CU.userId);
+  if (ui !== -1) { users[ui].posts = (users[ui].posts||0)+1; LS.set('users',users); CU=users[ui]; }
+  closeM('post');
+  go('community');
+  toast('Post published! 🎉','✅');
+}
+
+function delPost(postId) {
+  if (!CU) return;
+  const posts = getPosts();
+  const post = posts.find(p=>p.id===postId);
+  if (!post) return;
+  if (post.uid !== CU.userId && !post.uid.startsWith('demo')) {
+    toast('You can only delete your own posts','⚠️'); return;
+  }
+  savePosts(posts.filter(p=>p.id!==postId));
+  go('community');
+  toast('Post deleted','🗑️');
+}
+
+function submitServer() {
+  const n=_v('svN').trim(), ip=_v('svIp').trim(), ds=_v('svDs').trim();
+  if (!n||!ip||!ds) { _showEl('svErr','Name, IP and description are required.'); document.getElementById('svErr').style.display='block'; return; }
+  document.getElementById('svErr').style.display='none';
+  closeM('srv');
+  toast('Server submitted for review! We\'ll get back to you soon.','✅');
+}
+
+/* ════════════════════════════════════════════
+   CARD TEMPLATES
+════════════════════════════════════════════ */
+function artCard(a) {
+  return `<div class="a-card" onclick="showArticle(${a.id})" role="article" tabindex="0" onkeydown="if(event.key==='Enter')showArticle(${a.id})">
+    <div class="a-thumb">${a.img?imgTag(a.img,a.title,'position:absolute;inset:0;width:100%;height:100%;object-fit:cover'):''}
+      <span style="position:relative;z-index:1;font-size:44px${a.img?';display:none':''}">${a.emoji}</span>
+    </div>
+    <div class="a-meta">
+      <span class="tag ${a.tag}">${esc(a.cat)}</span>
+      <span class="tag ${a.type==='Official'?'tb':a.type==='Community'?'tg':'ta'}">${esc(a.type)}</span>
+      <span style="margin-left:auto;font-size:10.5px">${esc(a.date)}</span>
+    </div>
+    <div class="a-body">
+      <div class="a-title">${esc(a.title)}</div>
+      <div class="a-sum">${esc(a.sum.slice(0,95))}…</div>
+      <div style="margin-top:7px;font-size:11px;color:var(--text3)">Source: ${esc(a.src)}</div>
+    </div>
+  </div>`;
+}
+
+function memCard(m) {
+  const isMe = CU && CU.userId === m.userId;
+  return `<div class="m-card">
+    <div class="av lg">${m.img ? imgTag(m.img,m.username) : esc(m.username[0].toUpperCase())}</div>
+    <div class="m-info">
+      <div class="m-name">${esc(m.username)}${isMe?' <span class="tag tg" style="font-size:9.5px">you</span>':''}</div>
+      <div class="m-bio">${esc(m.bio||'No bio yet.')}</div>
+      <div class="m-stat">⛏️ ${esc(m.edition)} &nbsp;·&nbsp; 📝 ${m.posts||0} posts &nbsp;·&nbsp; 📅 ${esc(m.joined)}</div>
+      <div class="m-badges">${(m.badges||[]).map(b=>`<span class="tag tg" style="font-size:10px">${esc(b)}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function postCard(p) {
+  const isOwn = CU && (CU.userId === p.uid);
+  const liked = hasLiked(p.id);
+  const likeCount = getLikeCount(p.id);
+  // For demo posts use the baked-in count; for real posts use stored count
+  const displayCount = (likeCount !== null && !p.uid?.startsWith('demo')) ? likeCount : p.likes;
+  const cmtCount = getPostComments(p.id).length;
+  return `<div class="p-card" id="pc${esc(p.id)}">
+    <div class="p-head">
+      <div class="av">${esc(p.author[0].toUpperCase())}</div>
+      <div class="p-head-meta">
+        <div style="font-weight:600;font-size:13.5px">${esc(p.author)}</div>
+        <div style="font-size:11.5px;color:var(--text3)">${esc(p.time)} &nbsp;·&nbsp; <span class="tag tg" style="font-size:10px">${esc(p.cat)}</span></div>
+      </div>
+      ${isOwn?`<button class="btn btn-d btn-s" onclick="delPost('${esc(p.id)}')">🗑 Delete</button>`:''}
+    </div>
+    <div class="p-title">${esc(p.title)}</div>
+    <div class="p-body">${esc(p.body)}</div>
+    <div class="p-actions">
+      <button class="like-btn${liked?' liked':''}" id="lb${esc(p.id)}"
+        onclick="toggleLike('${esc(p.id)}')"
+        aria-pressed="${liked}"
+        aria-label="Like this post">
+        <span class="heart">❤️</span>
+        <span id="lc${esc(p.id)}">${displayCount}</span>
+      </button>
+      <button class="btn btn-g btn-s" onclick="toggleComments('${esc(p.id)}')" aria-label="Toggle comments">
+        💬 <span id="cc${esc(p.id)}">${cmtCount}</span> Comment${cmtCount===1?'':'s'}
+      </button>
+      <button class="btn btn-g btn-s" onclick="toast('Report submitted to moderators','🚩')" aria-label="Report post">🚩 Report</button>
+    </div>
+  </div>`;
+}
+
+function serverCard(s) {
+  const addr = s.ip + (s.port ? ':'+s.port : '');
+  return `<div class="s-card">
+    <div class="s-icon">${s.img ? imgTag(s.img,s.name) : s.icon}</div>
+    <div class="s-info">
+      <div class="s-name">${esc(s.name)}${s.verified?' <span class="tag tg" style="font-size:10px">✓ Verified</span>':''}</div>
+      <div class="s-desc">${esc(s.desc)}</div>
+      <div class="s-meta">
+        <span class="tag tb">${esc(s.edition)}</span>
+        <span class="tag ta">${esc(s.ver)}</span>
+        <span class="tag tg">${esc(s.cat)}</span>
+        <span style="font-size:11.5px;color:var(--text3)">🌍 ${esc(s.region)}</span>
+      </div>
+      <div class="s-ip" title="${esc(addr)}">${esc(addr)}</div>
+    </div>
+    <div class="s-actions">
+      <div class="copy-wrap">
+        <button class="btn btn-p btn-s" onclick="copyIP('${esc(addr)}',${s.id})">📋 Copy IP</button>
+        <div class="copy-tip" id="ct${s.id}">Copied!</div>
+      </div>
+      <button class="btn btn-o btn-s" onclick="toast('Server: ${esc(addr)}','🌐')">Info</button>
+    </div>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════
+   PAGES
+════════════════════════════════════════════ */
+const PAGES = {
+
+/* ── HOME ── */
+home: () => {
+  const posts = getPosts().slice(0,2);
+  return `
+<div class="hero" id="heroEl">
+  <div class="hero-bg" id="heroBgEl"></div>
+  <div class="hero-content">
+    <div class="hero-pill">🌿 Featured</div>
+    <h1>Welcome to ${esc(SITE.name)} — ${esc(SITE.tagline)}</h1>
+    <p>News, community posts, server listings and more — all in one place.</p>
+    <div class="hero-btns">
+      <button class="btn btn-p" onclick="go('info')">📰 Explore News</button>
+      <button class="btn btn-o" onclick="go('servers')">🌐 Find Servers</button>
+    </div>
+  </div>
+  <div class="hero-deco" aria-hidden="true">⛏️<br>🌿💎</div>
+</div>
+
+<div class="sec-head"><h2>Quick <em>Navigate</em></h2></div>
+<div class="nc-grid">
+  ${[['📰','Information','News, updates & guides','info'],['👥','Members','Profiles & badges','members'],['💬','Community','Posts & discussions','community'],['🌐','Servers','Find multiplayer','servers'],['📜','Rules','Guidelines & conduct','rules']]
+    .map(([ico,t,d,p])=>`<div class="nc" onclick="go('${p}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')go('${p}')"><div class="nc-icon">${ico}</div><div class="nc-title">${t}</div><div class="nc-desc">${d}</div></div>`).join('')}
+</div>
+
+<div class="divider"></div>
+<div class="sec-head"><h2>Latest <em>Articles</em></h2><button class="btn btn-g btn-s" onclick="go('info')">See all →</button></div>
+<div class="grid-3" style="margin-bottom:28px">${ARTICLES.slice(0,3).map(artCard).join('')}</div>
+
+<div class="divider"></div>
+<div class="sec-head"><h2>Recent <em>Community</em> Posts</h2><button class="btn btn-g btn-s" onclick="go('community')">See all →</button></div>
+${posts.map(postCard).join('')}
+
+<div class="site-footer">
+  <div class="footer-links">
+    <a onclick="go('info')">Information</a><a onclick="go('members')">Members</a>
+    <a onclick="go('community')">Community</a><a onclick="go('servers')">Servers</a>
+    <a onclick="go('rules')">Rules</a>
+  </div>
+  <div class="footer-copy">${esc(SITE.name)} · Independent Minecraft community · Not affiliated with Mojang Studios or Microsoft<br>Minecraft® is a trademark of Mojang Studios</div>
+</div>`;
+},
+
+/* ── INFORMATION ── */
+info: () => {
+  const CATS = ['All','Update','Guide','Mods','Builds','Redstone','Resource Packs'];
+  return `<div class="sec-head"><h2>📰 <em>Information</em> Hub</h2><span style="font-size:12.5px;color:var(--text3)">News, guides & updates</span></div>
+<div class="filter-row" id="infoFilters">
+  ${CATS.map((c,i)=>`<button class="flt${i===0?' on':''}" onclick="filterArts('${c}',this)">${c}</button>`).join('')}
+</div>
+<div style="margin-bottom:18px">
+  <input type="search" id="artQ" placeholder="🔍  Search articles…" oninput="filterArts(curInfoCat,null)"
+    style="max-width:340px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;font-size:13px;color:var(--text);outline:none;width:100%">
+</div>
+<div id="artGrid" class="grid-3">${ARTICLES.map(artCard).join('')}</div>`;
+},
+
+/* ── MEMBERS ── */
+members: () => {
+  const allMembers = getAllMembers();
+  const grid = allMembers.length
+    ? `<div id="memGrid" class="grid-2">${allMembers.map(memCard).join('')}</div>`
+    : `<div id="memGrid">${emptyState('👥','No members yet','Be the first to sign up and join the community!',`openM('signup')`,'Sign Up Now')}</div>`;
+  return `<div class="sec-head">
+    <h2>👥 <em>Member</em> Directory</h2>
+    <button class="btn btn-p btn-s" onclick="${CU?`document.getElementById('epBio').value='${esc(CU.bio||'')}';document.getElementById('epEd').value='${esc(CU.edition||'Java')}';openM('editProfile')`:`openM('login')`}">✏️ My Profile</button>
+  </div>
+  <div style="margin-bottom:16px">
+    <input type="search" id="memQ" placeholder="🔍  Search members…" oninput="filterMems()"
+      style="max-width:340px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;font-size:13px;color:var(--text);outline:none;width:100%">
+  </div>
+  ${grid}`;
+},
+
+/* ── COMMUNITY ── */
+community: () => {
+  const posts = getPosts();
+  return `<div class="sec-head">
+    <h2>💬 <em>Community</em> Feed</h2>
+    <button class="btn btn-p btn-s" onclick="requireAuth(()=>openM('post'))">✍️ New Post</button>
+  </div>
+  <div class="tabs" id="postTabs">
+    <div class="tab on" onclick="filterPosts('All',this)">All</div>
+    <div class="tab" onclick="filterPosts('Builds',this)">Builds</div>
+    <div class="tab" onclick="filterPosts('Question',this)">Q&A</div>
+    <div class="tab" onclick="filterPosts('Survival',this)">Survival</div>
+    <div class="tab" onclick="filterPosts('Redstone',this)">Redstone</div>
+  </div>
+  <div id="postFeed">${posts.length ? posts.map(postCard).join('') : emptyState('📭','No posts yet','Be the first to share something with the community!',`requireAuth(()=>openM('post'))`,'Write a Post')}</div>`;
+},
+
+/* ── SERVERS ── */
+servers: () => `<div class="sec-head">
+    <h2>🌐 <em>Server</em> Directory</h2>
+    <button class="btn btn-p btn-s" onclick="openM('srv')">＋ Suggest Server</button>
+  </div>
+  <div class="warn-banner">⚠️ Server status is not automatically checked. Verify addresses before connecting. ${esc(SITE.name)} is not affiliated with any listed server.</div>
+  <div class="search-field">
+    <input type="search" id="srvQ" placeholder="🔍  Search servers…" oninput="filterSrvs()">
+    <select id="srvEd" onchange="filterSrvs()"><option value="">All Editions</option><option>Java</option><option>Bedrock</option><option>Both</option></select>
+    <select id="srvRg" onchange="filterSrvs()"><option value="">All Regions</option><option>EU</option><option>NA</option><option>Global</option></select>
+  </div>
+  <div id="srvList">${DEMO_SERVERS.map(serverCard).join('')}</div>`,
+
+/* ── RULES ── */
+rules: () => `<div class="sec-head"><h2>📜 Community <em>Rules</em></h2></div>
+<div class="warn-banner">⚠️ <strong>${esc(SITE.name)} is an independent community project. Not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft. Minecraft® is a trademark of Mojang Studios.</strong></div>
+${[
+  ['🤝 Respectful Behaviour',['Treat every member with respect regardless of skill level, age, or background.','No harassment, bullying, targeted attacks, or hate speech of any kind.','Personal disputes should be settled privately or escalated to moderators.']],
+  ['🚫 Prohibited Content',['No spam, flooding, or repetitive low-effort posts.','No scam links, phishing attempts, or deceptive URLs.','No advertising non-community servers without moderator approval.','No cheating tools, hacked-client promotions, or exploit instructions.','No NSFW or inappropriate content in any section.']],
+  ['🔒 Privacy & Safety',["Never share another member's real name, location, or personal information.",'Do not expose private messages without consent.','Report any data concern to moderators immediately.']],
+  ['🖼️ Uploads & Content',['Only upload content you created or have permission to share.','Respect intellectual property — credit original creators.','Images up to 5 MB. No executable files.']],
+  ['🌐 Server Listings',['All server information must be accurate. False claims result in removal.','No fabricated player counts or fake reviews.','Verified servers have passed our basic safety checklist.']],
+  ['⚖️ Moderation & Appeals',['Violations may result in warnings, post removal, or account suspension.','Bans are issued for serious or repeated rule-breaking.','Appeal a decision by submitting a report and contacting a moderator.','Moderator decisions are final but reviewable by senior staff.']],
+].map(([t,rules])=>`<div class="rule-block"><h3>${t}</h3><ul>${rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>`).join('')}
+<div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;text-align:center">
+  <div style="font-size:22px;margin-bottom:8px">📬</div>
+  <div style="font-weight:700;margin-bottom:4px">Report a violation</div>
+  <div style="font-size:13px;color:var(--text3);margin-bottom:14px">See something that breaks the rules? Let us know.</div>
+  <button class="btn btn-p" onclick="toast('Report submitted to moderators — thank you.','📨')">Submit a Report</button>
+</div>
+<div class="site-footer"><div class="footer-copy">${esc(SITE.name)} · Independent Minecraft community · Not affiliated with Mojang Studios or Microsoft</div></div>`,
+};
+
+/* ════════════════════════════════════════════
+   ARTICLE DETAIL
+════════════════════════════════════════════ */
+function showArticle(id) {
+  const a = ARTICLES.find(x=>x.id===id);
+  if (!a) return;
+  const el = document.getElementById('page');
+  el.innerHTML = `
+<button class="btn btn-g btn-s" style="margin-bottom:18px" onclick="go('info')">← Back to Articles</button>
+<div class="card">
+  <div style="height:200px;background:linear-gradient(135deg,#0d2a1a,#1e4d30);display:flex;align-items:center;justify-content:center;font-size:72px;position:relative;overflow:hidden">
+    ${a.img ? imgTag(a.img,a.title,'position:absolute;inset:0;width:100%;height:100%;object-fit:cover') : ''}
+    <span style="position:relative;z-index:1${a.img?';display:none':''}">${a.emoji}</span>
+  </div>
+  <div class="card-body">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <span class="tag ${a.tag}">${esc(a.cat)}</span>
+      <span class="tag ${a.type==='Official'?'tb':a.type==='Community'?'tg':'ta'}">${esc(a.type)}</span>
+      <span style="font-size:12px;color:var(--text3)">${esc(a.date)} · Source: ${esc(a.src)}</span>
+    </div>
+    <h1 style="font-size:clamp(1.15rem,3vw,1.45rem);font-weight:700;margin-bottom:12px;line-height:1.3">${esc(a.title)}</h1>
+    <p style="color:var(--text4);line-height:1.8;font-size:14.5px">${esc(a.sum)}</p>
+    <p style="color:var(--text3);margin-top:14px;font-size:13.5px;line-height:1.75">
+      This is a preview article. Connect a Supabase backend to store full article content and enable bookmarks, comments and sharing.
+    </p>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-o btn-s" onclick="toast('Bookmarked!','🔖')">🔖 Bookmark</button>
+      <button class="btn btn-g btn-s" onclick="if(navigator.share)navigator.share({title:'${esc(a.title)}',url:window.location.href});else{navigator.clipboard?.writeText(window.location.href);toast('Link copied','🔗')}">🔗 Share</button>
+    </div>
+  </div>
+</div>`;
+}
+
+/* ════════════════════════════════════════════
+   FILTERS
+════════════════════════════════════════════ */
+let curInfoCat = 'All';
+
+function filterArts(cat, btn) {
+  curInfoCat = cat;
+  if (btn) { document.querySelectorAll('#infoFilters .flt').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+  const q = (_v('artQ')||'').toLowerCase();
+  const grid = document.getElementById('artGrid');
+  if (!grid) return;
+  const f = ARTICLES.filter(a=>(cat==='All'||a.cat===cat)&&(!q||a.title.toLowerCase().includes(q)||a.sum.toLowerCase().includes(q)));
+  grid.innerHTML = f.length ? f.map(artCard).join('') : emptyState('🔍','No articles found','Try a different filter or search term.');
+}
+
+function filterMems() {
+  const q = (_v('memQ')||'').toLowerCase();
+  const grid = document.getElementById('memGrid');
+  if (!grid) return;
+  const f = getAllMembers().filter(m=>!q||m.username.toLowerCase().includes(q)||(m.bio||'').toLowerCase().includes(q));
+  grid.innerHTML = f.length ? f.map(memCard).join('') : emptyState('👤','No members found','Try a different search term.');
+}
+
+function filterPosts(cat, btn) {
+  if (btn) { document.querySelectorAll('#postTabs .tab').forEach(t=>t.classList.remove('on')); btn.classList.add('on'); }
+  const feed = document.getElementById('postFeed');
+  if (!feed) return;
+  const posts = getPosts();
+  const f = cat==='All' ? posts : posts.filter(p=>p.cat===cat);
+  feed.innerHTML = f.length ? f.map(postCard).join('') : emptyState('📭','No posts here','Be the first to share in this category!',`requireAuth(()=>openM('post'))`,'Write a Post');
+}
+
+function filterSrvs() {
+  const q=(_v('srvQ')||'').toLowerCase(), ed=_v('srvEd'), rg=_v('srvRg');
+  const list = document.getElementById('srvList');
+  if (!list) return;
+  const f = DEMO_SERVERS.filter(s=>
+    (!q||s.name.toLowerCase().includes(q)||s.desc.toLowerCase().includes(q))&&
+    (!ed||s.edition===ed||s.edition==='Both')&&
+    (!rg||s.region===rg));
+  list.innerHTML = f.length ? f.map(serverCard).join('') : emptyState('🌐','No servers found','Try different filters.');
+}
+
+function emptyState(ico, h, txt, action='', lbl='') {
+  return `<div class="empty"><div class="empty-ico">${ico}</div><h3>${esc(h)}</h3><p>${esc(txt)}</p>${action?`<button class="btn btn-p" onclick="${action}">${esc(lbl)}</button>`:''}</div>`;
+}
+
+/* ════════════════════════════════════════════
+   BOOT — restore session, then render
+════════════════════════════════════════════ */
+(function boot() {
+  // Restore persisted session synchronously
+  restoreSession();
+  // Hide loader
+  const loader = document.getElementById('sessionLoader');
+  if (loader) loader.classList.add('hidden');
+  // Sync UI
+  refreshAuth();
+  // Render home page
+  go('home');
+})();
+
+/*
+════════════════════════════════════════════════════════════
+  SUPABASE INTEGRATION GUIDE (for shared community data)
+════════════════════════════════════════════════════════════
+
+Current status: All data is stored in localStorage.
+This means each device/browser is independent.
+To share members, posts, likes, and comments across all
+users and devices, connect Supabase:
+
+STEP 1 — Create a free Supabase project at supabase.com
+STEP 2 — Run this SQL in the Supabase SQL editor:
+
+  create table profiles (
+    id uuid references auth.users primary key,
+    username text unique not null,
+    bio text default '',
+    edition text default 'Java',
+    badges text[] default array['🌱 New'],
+    posts int default 0,
+    joined text,
+    img text default '',
+    created_at timestamptz default now()
+  );
+  alter table profiles enable row level security;
+  create policy "Public read" on profiles for select using (true);
+  create policy "Own update" on profiles for update using (auth.uid()=id);
+
+  create table posts (
+    id uuid primary key default gen_random_uuid(),
+    author_id uuid references auth.users not null,
+    author_name text not null,
+    cat text not null,
+    title text not null,
+    body text not null,
+    created_at timestamptz default now()
+  );
+  alter table posts enable row level security;
+  create policy "Public read" on posts for select using (true);
+  create policy "Auth insert" on posts for insert with check (auth.uid()=author_id);
+  create policy "Own delete" on posts for delete using (auth.uid()=author_id);
+
+  create table likes (
+    post_id uuid references posts,
+    user_id uuid references auth.users,
+    primary key (post_id, user_id)
+  );
+  alter table likes enable row level security;
+  create policy "Public read" on likes for select using (true);
+  create policy "Auth insert" on likes for insert with check (auth.uid()=user_id);
+  create policy "Own delete" on likes for delete using (auth.uid()=user_id);
+
+  create table comments (
+    id uuid primary key default gen_random_uuid(),
+    post_id uuid references posts,
+    author_id uuid references auth.users,
+    author_name text not null,
+    body text not null,
+    created_at timestamptz default now()
+  );
+  alter table comments enable row level security;
+  create policy "Public read" on comments for select using (true);
+  create policy "Auth insert" on comments for insert with check (auth.uid()=author_id);
+  create policy "Own delete" on comments for delete using (auth.uid()=author_id);
+
+STEP 3 — Replace LS.get/set calls in this file with
+  Supabase client calls using your PUBLIC anon key only.
+  NEVER put the service_role key in frontend code.
+
+STEP 4 — In your GitHub repo Settings > Secrets is NOT
+  needed for the anon key (it's public). Just hard-code
+  the SUPABASE_URL and SUPABASE_ANON_KEY in the script.
+
+ENVIRONMENT VARIABLES:
+  SUPABASE_URL      → safe to put in frontend (it's public)
+  SUPABASE_ANON_KEY → safe to put in frontend (RLS protects data)
+  SUPABASE_SERVICE_ROLE_KEY → NEVER put in frontend — backend only
+
+════════════════════════════════════════════════════════════
+*/
+</script>
+</body>
+</html>
